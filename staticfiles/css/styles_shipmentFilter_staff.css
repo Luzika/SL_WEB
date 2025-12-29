@@ -1,0 +1,28 @@
+.form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+.btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+}
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.25rem;
+}
+.shipmentBox {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+.shipmentTableTh {
+    font-weight: bold;
+}

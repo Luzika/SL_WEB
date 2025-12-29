@@ -1,0 +1,209 @@
+{% extends "mainBody.html" %}
+
+{% block bodyContent %}
+{% load custom_pagination_tags %}
+<div>
+    <div id="jsonDataPrelistCompanies"
+  style="display: none;" data-json="{{ prelistCompanies }}"></div>
+  <div id="jsonDataPrelistSuppliers"
+  style="display: none;" data-json="{{ prelistSuppliers }}"></div>
+  <div id="jsonDataPrelistDivisions"
+  style="display: none;" data-json="{{ prelistDivisions }}"></div>
+  <div id="jsonDataPrelistCPacking"
+  style="display: none;" data-json="{{ prelistCPacking }}"></div>
+  <div id="jsonDataPrelistUnits"
+  style="display: none;" data-json="{{ prelistUnits }}"></div>
+  <div id="jsonDataPrelistBys"
+  style="display: none;" data-json="{{ prelistBys }}"></div>
+  <div id="jsonDataPrelistFlags"
+  style="display: none;" data-json="{{ prelistFlags }}"></div>
+  <div id="jsonDatalistWarehouses"
+  style="display: none;" data-json="{{ prelistWarehouses }}"></div>
+  <div id="jsonDatalistVessels"
+  style="display: none;" data-json="{{ VesselsDB }}"></div>
+  <div id="jsonDatalistVesselMap"
+  style="display: none;" data-json="{{ VesselMap }}"></div>
+
+  {% if messages %}
+  <div class="message-container" id="messageContainer">
+      {% for message in messages %}
+          {% if forloop.first %}
+              {# ---------- NEWEST (visible) ALERT ---------- #}
+              <div class="alert alert-{{ message.tags }} message-alert alert-dismissible fade show"
+                  role="alert"
+                  {% if message.tags != 'error' %}
+                      data-autodismiss="true"
+                  {% else %}
+                      data-autodismiss="false"
+                  {% endif %}
+              >
+                  <i class="bi bi-{{ message.tags|default:'info-circle' }}"></i>
+                  <span>{{ message }}</span>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"
+                          aria-label="Close"></button>
+              </div>
+          {% else %}
+              {# ---------- OLDER MESSAGES (hidden in details) ---------- #}
+              {% if forloop.parentloop.first %}
+              <details class="message-history mt-2">
+                  <summary class="text-muted small" style="cursor:pointer;">
+                      <i class="bi bi-clock-history me-1"></i>
+                      {{ messages|length|add:-1 }} older message{{ messages|length|add:-1|pluralize }}
+                  </summary>
+                  <div class="message-history-list mt-2 p-2 border rounded">
+              {% endif %}
+                      <div class="alert alert-{{ message.tags }} message-alert mb-2 p-2 small older-message">
+                          <i class="bi bi-{{ message.tags|default:'info-circle' }}"></i>
+                          <span class="text-muted">{{ message }}</span>
+                      </div>
+              {% if forloop.last %}</div></details>{% endif %}
+          {% endif %}
+      {% endfor %}
+  </div>
+  {% endif %}
+
+  <div>
+    {% include "shipmentReg_staff.html" %}
+  </div>
+  <div>
+    {% include "shipmentFilter.html" %}
+  </div>
+  <div>
+    {% include "shipmentModify.html" %}
+    </div>
+    <div>
+    {% include "shipmentPending.html" %}
+  </div>
+  <div>
+    {% include "shipmentList_staff.html" %}
+  </div>
+
+</div>
+{% endblock bodyContent %}
+
+<style>
+/* Custom CSS for modern alert appearance */
+.message-container {
+    /* Limit container width to prevent alerts from stretching too wide */
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.message-alert {
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeIn 0.3s ease-in;
+    /* Use left border for emphasis instead of full border */
+    border-left: 5px solid; 
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+}
+
+/* Enhanced color schemes for the main (latest) alert */
+.alert-success {
+    background-color: #f0fff4; /* Lighter green background */
+    border-left-color: #28a745; /* Darker green border */
+    color: #1a6f3a; /* Dark green text */
+}
+
+.alert-danger {
+    background-color: #fff0f0; /* Lighter red background */
+    border-left-color: #dc3545; /* Darker red border */
+    color: #921f28; /* Dark red text */
+}
+
+.alert-warning {
+    background-color: #fffdf7; /* Lighter yellow background */
+    border-left-color: #ffc107; /* Darker yellow/orange border */
+    color: #a07802; /* Dark yellow/brown text */
+}
+
+.alert-info {
+    background-color: #f0f8ff; /* Lighter blue background */
+    border-left-color: #17a2b8; /* Darker blue border */
+    color: #0d6d7a; /* Dark blue text */
+}
+
+/* Specific styling for older messages in the history */
+.older-message {
+    /* Reset the color so the inherited background/border are visible */
+    background-color: #f8f9fa !important; /* Very light gray background */
+    color: #212529 !important; /* Ensure the icon is visible */
+}
+
+/* Adjust border color of older messages for a softer look */
+.older-message.alert-success {
+    border-left-color: #a3e4b7; /* Softer green */
+}
+.older-message.alert-danger {
+    border-left-color: #f5b7b7; /* Softer red */
+}
+.older-message.alert-warning {
+    border-left-color: #ffe082; /* Softer yellow */
+}
+.older-message.alert-info {
+    border-left-color: #81d4fa; /* Softer blue */
+}
+
+
+.message-alert .bi {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    color: inherit; /* Icon color matches text color */
+}
+
+/* Style for close button */
+.message-alert .btn-close {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Optional: Fade in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('messageContainer');
+    if (!container) return;
+
+    // Auto-dismiss non-error alerts
+    container.querySelectorAll('[data-autodismiss="true"]').forEach(alert => {
+        // Check if bootstrap.Alert is available
+        if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            setTimeout(() => bsAlert.close(), 5000);
+        } else {
+            // Fallback if Bootstrap JS is not loaded or alert is missing
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+    });
+
+    // Optional: close the whole container when the last visible alert is closed
+    container.addEventListener('closed.bs.alert', function () {
+        // Use a slight delay to ensure the DOM update finishes
+        setTimeout(() => {
+            // Check for any alert with the 'show' class (meaning it's visible)
+            if (!container.querySelector('.alert.show')) {
+                container.style.opacity = '0';
+                setTimeout(() => container.remove(), 300);
+            }
+        }, 10); 
+    });
+});
+</script>

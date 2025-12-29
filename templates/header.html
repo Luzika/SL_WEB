@@ -1,0 +1,209 @@
+{% load static %}
+<!-- Include Header CSS -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/headerLESS.css' %}">
+<!-- Header with a gradient background, full-width -->
+<div class="container-fluid headerPane d-flex flex-row align-items-center shadow-sm">
+  <!-- Logo with a light background -->
+  <div class="headerLogoWrapper me-auto d-flex align-items-center">
+      <a class="headerEmbeddedImg d-block" href="{% url 'loginPage' %}">
+          <img class="img-fluid rounded" alt="SmartIndoSystem" 
+                style=" transition: all 0.3s ease; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"
+                src="{% static 'images/rp_logo.png' %}">
+      </a>
+  </div>
+
+  <!-- Navigation bar -->
+  <div class="container-fluid px-0 headerNoPadding" 
+  style="margin-right: 0;">
+    <nav class="navbar navbar-expand-md headerNoPadding" 
+    style="justify-content: flex-end">
+    {% if request.user.is_authenticated %}
+      <!-- Toggle button -->
+      <button class="navbar-toggler" type="button"
+        data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        style="border: 1px solid #fff; margin-right: 0.5rem;">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible nav -->
+      <div class="collapse navbar-collapse" id="navbarNavDropdown"
+      style="justify-content: flex-end; margin-right: 2%;">
+        <ul class="navbar-nav align-items-center">
+          
+          {% if request.user.is_authenticated %}
+            <!-- Define a user alias for convenience -->
+            {% with userLogin=request.user %}
+
+            <!-- Role Login Display - Use inline conditional logic to set the role name -->
+            <li class="nav-item" style="margin-left: 1rem;">
+              <span class="nav-link btn btn-outline-info text-white px-3 py-2 rounded-pill headerNavFont"
+                    style="font-size: 18px; font-weight: 500; transition: all 0.3s;"
+                    onmouseover="this.style.backgroundColor='#17a2b8'; this.style.color='#fff';"
+                    onmouseout="this.style.backgroundColor='transparent';">
+                {% if userLogin.is_superuser or userLogin.isOpr %}
+                  Staff
+                {% elif userLogin.isCpn %}
+                  Company
+                {% elif userLogin.isSpl %}
+                  Supplier
+                {% else %}
+                  {{ roleLogin|capfirst }}
+                {% endif %}
+              </span>
+            </li>
+
+            <!-- 1. HOME Link for Staff/Operator (Highest Privilege) -->
+            {# Use is_superuser or isOpr for staff/operator views (mainPage1) #}
+            {% if userLogin.is_superuser or userLogin.isOpr %}
+            <li class="nav-item" style="margin-left: 1rem;">
+              <a class="nav-link btn btn-outline-success text-white px-3 py-2 rounded-pill headerNavFont"
+                 href="{% url 'mainPage1' %}"
+                 style="font-size: 18px; font-weight: 500; transition: all 0.3s;"
+                 onmouseover="this.style.backgroundColor='#28a745'; this.style.color='#fff';"
+                 onmouseout="this.style.backgroundColor='transparent';"
+              >HOME</a>
+            </li>
+            
+            <!-- 2. HOME Link for Company/Supplier (Customer Side) -->
+            {# Show mainPage2 ONLY if they are NOT staff/operator, and are a customer type #}
+            {% elif userLogin.isCpn or userLogin.isSpl %}
+            <li class="nav-item" style="margin-left: 1rem;">
+              <a class="nav-link btn btn-outline-success text-white px-3 py-2 rounded-pill headerNavFont"
+                 href="{% url 'mainPage2' %}"
+                 style="font-size: 18px; font-weight: 500; transition: all 0.3s;"
+                 onmouseover="this.style.backgroundColor='#28a745'; this.style.color='#fff';"
+                 onmouseout="this.style.backgroundColor='transparent';"
+              >HOME</a>
+            </li>
+            {% endif %}
+
+            <!-- Admin Link (conditional, based on flags) -->
+            {% if userLogin.is_superuser or userLogin.userID == "tan1" %}
+            <li class="nav-item" style="margin-left: 1rem;">
+              <a class="nav-link btn btn-outline-warning text-white px-3 py-2 rounded-pill headerNavFont" href="{% url 'adminPage' %}"
+                onmouseover="this.style.backgroundColor='#ffc107'; this.style.color='#fff';"
+                onmouseout="this.style.backgroundColor='transparent';">ADMIN</a>
+            </li>
+            {% endif %}
+
+            <!-- Superuser Specific Links (conditional) -->
+            {% if userLogin.is_superuser and userLogin.userID == "kmelong" %}
+            <li class="nav-item" style="margin-left: 1rem;">
+              <a class="nav-link btn btn-outline-warning text-white px-3 py-2 rounded-pill headerNavFont" href="{% url 'omegaManagePage' %}"
+                onmouseover="this.style.backgroundColor='#ffc107'; this.style.color='#fff';"
+                onmouseout="this.style.backgroundColor='transparent';">MAN</a>
+            </li>
+            <li class="nav-item" style="margin-left: 1rem;">
+              <a class="nav-link btn btn-outline-warning text-white px-3 py-2 rounded-pill headerNavFont" href="{% url 'omegaMonitorPage' %}"
+                onmouseover="this.style.backgroundColor='#ffc107'; this.style.color='#fff';"
+                onmouseout="this.style.backgroundColor='transparent';">MON</a>
+            </li>
+            {% endif %}
+
+            <!-- Logout Link -->
+            <li class="nav-item" style="margin-left: 1rem;">
+              <a class="nav-link btn btn-outline-danger text-white px-3 py-2 rounded-pill" href="{% url 'logoutPage' %}"
+              style="font-size: 18px; font-weight: 500; transition: all 0.3s;"
+              onmouseover="this.style.backgroundColor='#dc3545'; this.style.color='#fff';"
+              onmouseout="this.style.backgroundColor='transparent';">LOGOUT</a>
+            </li>
+          
+            {% endwith %}
+          {% endif %}
+        </ul>
+      </div>
+      {% endif %}
+    </nav>
+  </div>
+</div>
+<!-- Combined Custom CSS for Header -->
+<style>
+  /* Header Styles */
+  .navbar-nav .nav-link:hover {
+    transform: scale(1.05);
+  }
+  .img-fluid:hover {
+    transform: scale(1.1);
+  }
+
+  /* Responsive adjustments for header */
+  @media (max-width: 768px) {
+    .headerLogoWrapper {
+      margin-left: 0.5rem;                  /* Reduced margin */
+      padding: 0.3rem;                      /* Reduced padding */
+    }
+    .headerPane {
+      padding-top: 0.5rem;                  /* Reduced vertical padding */
+      padding-bottom: 0.5rem;
+    }
+    .container-fluid {
+      margin-right: 0rem;                   /* Reduced margin */
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .navbar-nav .nav-item {
+      margin-left: 0;         /* Remove margin between items in collapsed state */
+      margin-bottom: 0.5rem;  /* Add spacing between stacked items */
+    }
+    .navbar-nav .nav-link {
+      font-size: 16px;                      /* Slightly smaller text */
+      padding: 0.5rem 1rem;                 /* Adjusted padding */
+      width: 100%;                          /* Full width for better tap targets */
+      text-align: center;                   /* Center text in collapsed menu */
+    }
+    .navbar-collapse {
+      background-color: #2c3e50;          /* Dark blue to match header gradient */
+      padding: 1rem;                        /* Add padding for better spacing */
+      border-radius: 0 0 8px 8px;           /* Rounded bottom corners */
+    }
+  }
+
+  @media (max-width: 576px) {
+    .headerLogoWrapper {
+      max-width: 2.5cm;       /* Even smaller logo on very small screens */
+    }
+    .navbar-nav .nav-link {
+      font-size: 14px;                      /* Further reduced text size */
+    }
+  }
+</style>
+
+<!-- Custom JavaScript for closing menu on outside tap -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const navbarCollapse = document.querySelector('#navbarNavDropdown');
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const collapseInstance = new bootstrap.Collapse(navbarCollapse, { toggle: false });
+
+    // Debug logs to verify elements and state
+    console.log('Navbar Collapse:', navbarCollapse);
+    console.log('Navbar Toggler:', navbarToggler);
+    console.log('Collapse Instance:', collapseInstance);
+
+    // Close menu function using Bootstrap Collapse API
+    const closeMenu = () => {
+      if (navbarCollapse.classList.contains('show')) {
+        collapseInstance.hide(); // Directly hide the collapse
+        console.log('Menu closed');
+      }
+    };
+
+    // Event listener for clicks/taps outside the navbar
+    document.addEventListener('click', (event) => {
+      const isClickInsideNavbar = navbarCollapse.contains(event.target) || navbarToggler.contains(event.target);
+      console.log('Click detected. Inside navbar:', isClickInsideNavbar, 'Menu shown:', navbarCollapse.classList.contains('show'));
+      if (!isClickInsideNavbar && navbarCollapse.classList.contains('show')) {
+        closeMenu();
+      }
+    });
+
+    // Event listener for touch on mobile
+    document.addEventListener('touchstart', (event) => {
+      const isTouchInsideNavbar = navbarCollapse.contains(event.target) || navbarToggler.contains(event.target);
+      console.log('Touch detected. Inside navbar:', isTouchInsideNavbar, 'Menu shown:', navbarCollapse.classList.contains('show'));
+      if (!isTouchInsideNavbar && navbarCollapse.classList.contains('show')) {
+        closeMenu();
+      }
+    });
+  });
+</script>

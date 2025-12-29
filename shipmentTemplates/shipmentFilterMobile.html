@@ -1,0 +1,264 @@
+{% load static %}
+
+<!-- Full-width container with gradient background -->
+<div class="container-fluid px-0 m-0 shadow-sm"
+style="background: linear-gradient(135deg, #2c3e50, #3498db); padding-top: 2rem; padding-bottom: 2rem; width: 100vw; margin-left: 0; margin-right: 0;">
+  <h1 class="text-white text-center fw-bold mb-4 shipmentFormHeader">
+    DATA SEARCH
+  </h1>
+
+  <form method="GET" class="mx-auto bg-white shadow-lg rounded-3 p-4" 
+  style="max-width: 90%; width: 100%;">
+    <table id="shipmentFilterForm" class="table table-borderless mb-4" style="width: 100%;">
+      <input type="hidden" id="userRole" value="{% if request.user.isSpl %}supplier{% elif request.user.isCpn %}company{% else %}other{% endif %}">
+      <tbody>
+        <tr>
+          <td class="label-col fw-bold text-primary pe-1" 
+          style="vertical-align: middle;">DATE</td>
+          <td class="input-col">
+            <div class="d-flex flex-column gap-2">
+              <input class="form-control centeredForm flatpickr-input" type="text" 
+                     id="id_in_date_range_0" name="in_date_range_min" placeholder="YYYYMMDD">
+              <input class="form-control centeredForm flatpickr-input" type="text" 
+                     id="id_in_date_range_1" name="in_date_range_max" placeholder="YYYYMMDD">
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="label-col fw-bold text-primary pe-1" 
+          style="vertical-align: middle;">VESSEL</td>
+          <td class="input-col">
+            <!-- VESSEL Field: Dynamically Populated -->
+            <input class="form-control shipmentTableTd" type="text" list="filteredVesselsList"
+                  id="id_filteredVessels" name="vessel" placeholder="Select or type">
+            <datalist id="filteredVesselsList">
+              <!-- This will be dynamically populated -->
+            </datalist>
+          </td>
+        </tr>
+        <tr>
+          <td class="label-col fw-bold text-primary pe-1" 
+          style="vertical-align: middle;">STATUS</td>
+          <td class="input-col">
+            <select class="form-select shipmentTableTd"
+            id="id_flag_statusF" name="flag_status"></select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="d-flex flex-row justify-content-end pe-3">
+      <button class="btn btn-outline-secondary btn-sm mx-2" type="submit" name="filterReset"
+      style="font-family: 'Poppins', sans-serif; font-weight: 500; transition: all 0.3s;">
+        Reset
+      </button>
+      <button class="btn btn-primary btn-sm mx-2 text-white" type="submit" name="filterShipment"
+      style="font-family: 'Poppins', sans-serif; font-weight: 500; transition: all 0.3s;"
+      onmouseover="this.style.backgroundColor='#1a73e8';"
+      onmouseout="this.style.backgroundColor='#0d6efd';">
+        Search
+      </button>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/shipmentFilFunctions.js' %}" defer></script>
+<!-- Flatpickr Configuration with Enhanced Debugging -->
+<!-- Flatpickr Configuration -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof flatpickr === 'undefined') {
+      console.error('Flatpickr is not loaded. Check the CDN link or network connection.');
+      return;
+    }
+    const prelistFlagsFil = loadJsonData('#jsonDataPrelistFlags');
+    setupSelectCell('id_flag_statusF', prelistFlagsFil, "", "ALL");
+
+    const datePickerConfig = {
+      dateFormat: 'Ymd', // Display and output as YYYYMMDD (e.g., "20250311")
+      allowInput: true,  // Allow manual typing
+      disableMobile: true, // Prevent native picker on mobile
+      onChange: function(selectedDates, dateStr, instance) {
+        instance.element.value = dateStr; // Ensure YYYYMMDD
+      },
+      onClose: function(selectedDates, dateStr, instance) {
+        if (dateStr && dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+          const year = dateStr.slice(0, 4);
+          const month = dateStr.slice(4, 6);
+          const day = dateStr.slice(6, 8);
+          const date = new Date(year, month - 1, day);
+          if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day) {
+            alert('Invalid date! Please enter a valid date in YYYYMMDD format.');
+            instance.clear();
+          }
+        } else if (dateStr && dateStr.length !== 8) {
+          alert('Date must be in YYYYMMDD format (8 digits)!');
+          instance.clear();
+        }
+      }
+    };
+
+    flatpickr('#id_in_date_range_0', datePickerConfig);
+    flatpickr('#id_in_date_range_1', datePickerConfig);
+
+    const userRole = document.getElementById('userRole').value; // Assume user role is passed as a hidden input
+    // JSON data from hidden divs (mainPage2.html)
+    const companiesData = loadJsonData('#jsonDataPrelistCompanies');
+    const vesselsData = loadJsonData('#jsonDatalistVessels');
+
+    if (userRole == 'company') {
+      // Get the filtered vessels from the backend
+      const filteredVessels = {{ filtered_vessels|safe }}; // Pass the list as JSON
+      
+      // Get the datalist element
+      const datalist = document.getElementById('filteredVesselsList');
+      
+      // Populate the datalist with the filtered vessels
+      filteredVessels.forEach(vessel => {
+        const option = document.createElement('option');
+        option.value = vessel;
+        datalist.appendChild(option);
+      });
+    } else if (userRole == 'supplier') {
+
+      // Setup datalist fields
+      const datalistFields = [
+          { listId: 'datalistCompaniesFil', dataId: companiesData },
+          { listId: 'filteredVesselsList', dataId: vesselsData }
+      ];
+
+      datalistFields.forEach(field => {
+          // field.dataId may be a parsed array (companiesData) or a selector string.
+          const data = Array.isArray(field.dataId) ? field.dataId : loadJsonData(field.dataId);
+          console.log('datalist data:', data);
+          if (data && data.length) {
+              const datalistEl = document.getElementById(field.listId);
+              if (datalistEl) {
+                  datalistEl.innerHTML = data
+                    .map(item => `<option value="${String(item || '').trim()}"></option>`)
+                    .join('');
+                  console.log(`Datalist ${field.listId} setup complete`);
+              } else {
+                  console.warn(`Datalist element ${field.listId} not found`);
+              }
+          } else {
+              console.warn(`Data for ${field.listId} is missing or invalid`, data);
+          }
+      });
+
+      // Setup vessel autofill based on company
+      if (companiesData && vesselsData) {
+          autofillOnVessels1('id_filteredVessels', 'id_prelistCompaniesF');
+      } else {
+          console.warn('Missing data for company or vessel autofill');
+          console.warn('Reason: companiesData is', companiesData, ', vesselsData is', vesselsData);
+      }
+    }
+  });
+</script>
+
+<!-- Custom CSS (Matched to Add New Shipment) -->
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  .table td {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    padding: 0.5rem;
+    vertical-align: middle;
+  }
+  .label-col {
+    width: 15%;
+    min-width: 80px;
+  }
+  .input-col {
+    width: 85%;
+  }
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .centeredForm {
+    text-align: center;
+  }
+  .flatpickr-input {
+    font-family: 'Poppins', sans-serif;
+  }
+  .btn {
+    transition: all 0.3s;
+  }
+  .btn:hover {
+    transform: scale(1.05);
+  }
+  .btn-primary {
+    background-color: #0d6efd;
+  }
+  .btn-primary:hover {
+    background-color: #1a73e8;
+  }
+  .btn-outline-secondary {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.75rem;
+    }
+    .container-fluid {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    .shadow-lg {
+      padding: 1rem;
+    }
+    .table td {
+      padding: 0.5rem;
+    }
+  }
+  @media (max-width: 440px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+    .table td {
+      padding: 0.3rem;
+    }
+    .label-col {
+      width: 15%;
+      min-width: 60px;
+      font-size: 0.9rem;
+    }
+    .input-col {
+      width: 85%;
+      font-size: 0.9rem;
+    }
+    .form-control, .form-select {
+      font-size: 0.875rem;
+    }
+    .btn-sm {
+      font-size: 0.875rem;
+      padding: 0.25rem 0.75rem;
+    }
+  }
+</style>

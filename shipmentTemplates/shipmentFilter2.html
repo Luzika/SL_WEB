@@ -1,0 +1,488 @@
+{% load static %}
+
+<div class="container-fluid py-4 shipmentBox">
+  <!-- Header -->
+  <h1 class="display-5 fw-bold text-primary mb-5 shipmentFormHeader">
+    <i class="bi bi-search me-2"></i>Data Search
+  </h1>
+  <!-- Form with shadow and rounded corners -->
+  <form method="GET" class="shadow-lg rounded-3 p-4 bg-white"
+  style="max-width: 100%; margin: 0 auto; margin-bottom: 1rem;">
+    <table id="shipmentFilterForm" class="table table-bordered table-hover mb-0"
+    style="width: 100%; border-radius: 0.5rem; overflow: hidden;">
+      <input type="hidden" id="userRole" value="{% if request.user.isSpl %}supplier{% elif request.user.isCpn %}company{% else %}other{% endif %}">
+      <!-- First Row Headers -->
+      <tr class="table-primary">
+        <td class="shipmentTableTh" style="width: 12%">IN DATE</td>
+        <td class="shipmentTableTh" style="width: 12%">ONBOARD DATE</td>
+        <td class="shipmentTableTh" style="width: 14%">COMPANY</td>
+        <td class="shipmentTableTh" style="width: 14%">SUPPLIER</td>
+        <td class="shipmentTableTh" style="width: 14%">VESSEL</td>
+        <td class="shipmentTableTh" style="width: 14%">ORDER. NO</td>
+        <td class="shipmentTableTh" style="width: 12%">QUANTY</td>
+      </tr>
+      <!-- First Row Inputs -->
+      <tr>
+        <td style="width: 12%;">
+          <div class="d-flex flex-column gap-1">
+            <input class="form-control shipmentTableTd" type="text"
+            id="id_in_date_range_0" name="in_date_range_min"
+            placeholder="From (YYYYMMDD)">
+            <input class="form-control shipmentTableTd" type="text"
+            id="id_in_date_range_1" name="in_date_range_max"
+            placeholder="To (YYYYMMDD)">
+          </div>
+        </td>
+        <td style="width: 12%;">
+          <div class="d-flex flex-column gap-1">
+            <input class="form-control shipmentTableTd" type="text"
+            id="id_out_date_range_0" name="out_date_range_min"
+            placeholder="From (YYYYMMDD)">
+            <input class="form-control shipmentTableTd" type="text"
+            id="id_out_date_range_1" name="out_date_range_max"
+            placeholder="To (YYYYMMDD)">
+          </div>
+        </td>
+        <td style="width: 14%;">
+          <!-- COMPANY Field -->
+          {% if request.user.isCpn %}
+            <!-- Pre-filled and Read-Only for Company Accounts -->
+            <input class="form-control shipmentTableTd" type="text" id="id_prelistCompaniesF" 
+                  name="company" value="{{ user.companyName }}" readonly>
+          {% else  %}
+            <!-- Full List for Operator Accounts -->
+            <input class="form-control shipmentTableTd" type="text" list="datalistCompaniesFil"
+                  id="id_prelistCompaniesF" name="company" placeholder="Select or type">
+            <datalist id="datalistCompaniesFil">
+              {% for company in company_list %}
+              <option value="{{ company }}">{{ company }}</option>
+              {% endfor %}
+            </datalist>
+          {% endif %}
+        </td>
+        <!-- <td>
+          <input class="form-control shipmentTableTd" type="text" list="datalistSuppliersF" placeholder="Select or type" id="id_supplierF" name="supplier">
+          <datalist id="datalistSuppliersF"></datalist>
+        </td> -->
+        <td style="width: 14%;">
+          <!-- SUPPLIER Field -->
+          {% if request.user.isSpl %}
+            <!-- Pre-filled and Read-Only for Supplier Accounts -->
+            <input class="form-control shipmentTableTd" type="text" id="id_supplierField" 
+                  name="supplier" value="{{ supplier_name }}" readonly>
+          {% else %}
+            <!-- Editable for Other Accounts -->
+            <input class="form-control shipmentTableTd" type="text" list="datalistSuppliersF" placeholder="Select or type" 
+            id="id_supplierF" name="supplier" value="{{ request.GET.supplier }}">
+            <datalist id="datalistSuppliersF"></datalist>
+          {% endif %}
+        </td>
+        <td style="width: 14%;">
+          <!-- VESSEL Field: Dynamically Populated -->
+          <input class="form-control shipmentTableTd" type="text" list="filteredVesselsList"
+                id="id_filteredVessels" name="vessel" placeholder="Select or type" value="{{ request.GET.vessel }}">
+          <datalist id="filteredVesselsList">
+            <!-- This will be dynamically populated -->
+          </datalist>
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_Order_NoF" name="Order_No" value="{{ request.GET.Order_No }}">
+        </td>
+        <td style="width: 12%;">
+          <input class="form-control shipmentTableTd" type="text"
+          id="id_quantyF" name="quanty">
+        </td>
+      </tr>
+
+      <!-- Second Row Headers -->
+      <tr class="table-primary">
+        <td class="shipmentTableTh" style="width: 12%">WEIGHT</td>
+        <td class="shipmentTableTh" style="width: 12%">PORT</td>
+        <td class="shipmentTableTh" style="width: 14%">EXP. BL</td>
+        <td class="shipmentTableTh" style="width: 14%">W/HOUSE</td>
+        <td class="shipmentTableTh" style="width: 14%">DIVISION</td>
+        <td class="shipmentTableTh" style="width: 14%">STATUS</td>
+        <td class="shipmentTableTh" style="width: 16%">ACTION</td>
+      </tr>
+
+      <!-- Second Row Inputs -->
+      <tr>
+        <td style="width: 12%;">
+          <input class="form-control shipmentTableTd" type="text"
+          id="id_weightF" name="weight" value="{{ request.GET.weight }}">
+        </td>
+        <td style="width: 12%;">
+          <input class="form-control shipmentTableTd" type="text"
+          id="id_portF" name="port" value="{{ request.GET.port }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_job_numberF" name="EXP_BL" value="{{ request.GET.EXP_BL }}">
+        </td>
+        <td style="width: 14%;">
+          <input class="form-control shipmentTableTd" type="text"
+          list="datalistWhF"
+          id="id_pickWh" name="warehouse" placeholder="Select or type" value="{{ request.GET.warehouse }}">
+          <datalist id="datalistWhF"></datalist>
+        </td>
+        <td style="width: 14%;">
+          <select class="form-select shipmentTableTd" id="id_division"
+          name="division">
+            <option value="" {% if not request.GET.division %}selected{% endif %}>All</option>
+            <option value="B" {% if request.GET.division == 'B' %}selected{% endif %}>B</option>
+            <option value="L" {% if request.GET.division == 'L' %}selected{% endif %}>L</option>
+            <option value="D" {% if request.GET.division == 'D' %}selected{% endif %}>D</option>
+          </select>
+        </td>
+        <td style="width: 14%;">
+          <div id="flagStatusContainer" class="d-flex flex-wrap"></div>
+        </td>
+        <td style="width: 16%;">
+          <div class="d-flex flex-row gap-2 justify-content-center">
+            <button class="btn btn-outline-secondary" type="submit" name="filterReset">
+              <i class="bi bi-arrow-counterclockwise me-2"></i>Reset
+            </button>
+            <button class="btn btn-primary" type="submit" name="filterShipment">
+              <i class="bi bi-search me-2"></i>Search
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<script src="{% static 'js/shipmentFilFunctions.js' %}" defer></script>
+<!-- Flatpickr Configuration -->
+ 
+<script>
+
+  // Sample autofillOnVessels function
+  function autofillOnVessels1(idVesselCell, idCompanyCell,
+      dataTag='#jsonDatalistVesselMap') {
+      var vesselSmartPick = document.getElementById(idVesselCell);
+      var companyAutofill = document.getElementById(idCompanyCell);
+      var vesselMap = loadJsonData(dataTag);
+      var vesselOwnedList = vesselMap.map((item)=>item.vessel);
+      var vesselOwnerList = vesselMap.map((item)=>item.vesselOwner);
+
+      vesselSmartPick.onchange = function() {
+          let vesselPicked = vesselSmartPick.value;
+          let idxPicked = vesselOwnedList.indexOf(vesselPicked);
+          companyAutofill.value = vesselOwnerList[idxPicked];
+      }
+  }
+
+  // Helper function (assumed, adjust if different)
+  function loadJsonData(selector) {
+      const element = document.querySelector(selector);
+      if (!element) {
+          console.error(`Element ${selector} not found`);
+          return null;
+      }
+      try {
+          return JSON.parse(element.dataset.json || '[]');
+      } catch (e) {
+          console.error(`Failed to parse JSON for ${selector}: ${e}`);
+          return null;
+      }
+  }
+
+  // Helper function for datalist (assumed, adjust if different)
+  function setupDatalistCell(listId, dataId) {
+      const datalist = document.getElementById(listId);
+      const data = loadJsonData(dataId);
+      if (datalist && data) {
+          datalist.innerHTML = data.map(item => `<option value="${item}"></option>`).join('');
+      } else {
+          console.warn(`Failed to setup datalist ${listId}`);
+      }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded event fired for filter by supplier')
+
+    if (typeof flatpickr === 'undefined') {
+      console.error('Flatpickr is not loaded. Check the CDN link or network connection.');
+      return;
+    }
+
+    const datePickerConfig = {
+      dateFormat: 'Ymd', // Display and output as YYYYMMDD (e.g., "20250311")
+      allowInput: true,  // Allow manual typing
+      disableMobile: true, // Prevent native picker on mobile
+      onChange: function(selectedDates, dateStr, instance) {
+        instance.element.value = dateStr; // Ensure YYYYMMDD
+      },
+      onClose: function(selectedDates, dateStr, instance) {
+        if (dateStr && dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+          const year = dateStr.slice(0, 4);
+          const month = dateStr.slice(4, 6);
+          const day = dateStr.slice(6, 8);
+          const date = new Date(year, month - 1, day);
+          if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day) {
+            alert('Invalid date! Please enter a valid date in YYYYMMDD format.');
+            instance.clear();
+          }
+        } else if (dateStr && dateStr.length !== 8) {
+          alert('Date must be in YYYYMMDD format (8 digits)!');
+          instance.clear();
+        }
+      }
+    };
+
+    flatpickr('#id_in_date_range_0', datePickerConfig);
+    flatpickr('#id_in_date_range_1', datePickerConfig);
+    
+    const userRole = document.getElementById('userRole').value; // Assume user role is passed as a hidden input
+    // JSON data from hidden divs (mainPage2.html)
+    const companiesData = loadJsonData('#jsonDataPrelistCompanies');
+    const vesselsData = loadJsonData('#jsonDatalistVessels');
+
+    if (userRole == 'company') {
+      // Get the filtered vessels from the backend
+      const filteredVessels = {{ filtered_vessels|safe }}; // Pass the list as JSON
+      
+      // Get the datalist element
+      const datalist = document.getElementById('filteredVesselsList');
+      
+      // Populate the datalist with the filtered vessels
+      filteredVessels.forEach(vessel => {
+        const option = document.createElement('option');
+        option.value = vessel;
+        datalist.appendChild(option);
+      });
+    } else if (userRole == 'supplier') {
+
+        // Setup datalist fields
+      const datalistFields = [
+          { listId: 'datalistCompaniesFil', dataId: companiesData },
+          { listId: 'filteredVesselsList', dataId: vesselsData }
+      ];
+
+      datalistFields.forEach(field => {
+          // field.dataId may be a parsed array (companiesData) or a selector string.
+          const data = Array.isArray(field.dataId) ? field.dataId : loadJsonData(field.dataId);
+          console.log('datalist data:', data);
+          if (data && data.length) {
+              const datalistEl = document.getElementById(field.listId);
+              if (datalistEl) {
+                  datalistEl.innerHTML = data
+                    .map(item => `<option value="${String(item || '').trim()}"></option>`)
+                    .join('');
+                  console.log(`Datalist ${field.listId} setup complete`);
+              } else {
+                  console.warn(`Datalist element ${field.listId} not found`);
+              }
+          } else {
+              console.warn(`Data for ${field.listId} is missing or invalid`, data);
+          }
+      });
+
+      // Setup vessel autofill based on company
+      if (companiesData && vesselsData) {
+          autofillOnVessels1('id_filteredVessels', 'id_prelistCompaniesF');
+      } else {
+          console.warn('Missing data for company or vessel autofill');
+          console.warn('Reason: companiesData is', companiesData, ', vesselsData is', vesselsData);
+      }
+    
+    
+    }
+    // Populate flag/status checkboxes from prelistFlags (if available)
+    try {
+      const flags = loadJsonData('#jsonDataPrelistFlags') || [];
+      const container = document.getElementById('flagStatusContainer');
+      if (container && flags.length) {
+        container.innerHTML = '';
+        flags.forEach(flag => {
+          const safeVal = String(flag).trim();
+          const safeId = `flag_status_${safeVal.replace(/\s+/g, '_')}`;
+          const label = document.createElement('label');
+          label.className = 'form-check form-check-inline me-2';
+          label.innerHTML = `\n            <input class="form-check-input flag-status-checkbox" type="checkbox" name="flag_status" value="${safeVal}" id="${safeId}">\n            <span class="form-check-label">${safeVal}</span>\n          `;
+          container.appendChild(label);
+        });
+
+        // Restore checked flags from URL
+        const params = new URLSearchParams(window.location.search);
+        const selectedFlags = params.getAll('flag_status');
+        selectedFlags.forEach(v => {
+          const cb = container.querySelector(`input.flag-status-checkbox[value="${CSS.escape(v)}"]`);
+          if (cb) cb.checked = true;
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to populate flag/status checkboxes:', e);
+    }
+
+    // === Persist filter form state in localStorage ===
+    const FILTER_STATE_KEY = 'shipmentFilterState_v1';
+    const filterForm = document.querySelector('form');
+
+    function saveFilterState() {
+      try {
+        if (!filterForm) return;
+        const data = {};
+        Array.from(filterForm.elements).forEach(el => {
+          if (!el.name) return;
+          if (el.type === 'checkbox') {
+            // Support multiple checkboxes with same name
+            data[el.name] = data[el.name] || [];
+            if (el.checked) data[el.name].push(el.value);
+          } else if (el.type === 'select-multiple') {
+            data[el.name] = Array.from(el.selectedOptions).map(o => o.value);
+          } else if (el.type === 'submit' || el.type === 'button') {
+            // skip
+          } else {
+            data[el.name] = el.value;
+          }
+        });
+        localStorage.setItem(FILTER_STATE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.warn('Failed to save filter state:', e);
+      }
+    }
+
+    function restoreFilterState() {
+      try {
+        if (!filterForm) return;
+        const raw = localStorage.getItem(FILTER_STATE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        Array.from(filterForm.elements).forEach(el => {
+          if (!el.name || !(el.name in data)) return;
+          const val = data[el.name];
+          if (el.type === 'checkbox') {
+            // val is array
+            el.checked = Array.isArray(val) && val.indexOf(el.value) !== -1;
+          } else if (el.type === 'select-multiple') {
+            Array.from(el.options).forEach(o => { o.selected = Array.isArray(val) && val.indexOf(o.value) !== -1; });
+          } else if (el.type === 'submit' || el.type === 'button' || el.hasAttribute('readonly')) {
+            // skip
+          } else {
+            el.value = val;
+          }
+        });
+      } catch (e) {
+        console.warn('Failed to restore filter state:', e);
+      }
+    }
+
+    function clearFilterState() {
+      try {
+        localStorage.removeItem(FILTER_STATE_KEY);
+      } catch (e) {
+        console.warn('Failed to clear filter state:', e);
+      }
+    }
+
+    // Detect full page reloads and clear stored filters on reload
+    const navEntries = performance.getEntriesByType('navigation');
+    const isReload = navEntries.length > 0 && navEntries[0].type === 'reload';
+    if (isReload) {
+      clearFilterState();
+    } else {
+      // Restore state after non-reload loads (e.g., after POST->redirect)
+      restoreFilterState();
+    }
+
+    // Save filter state on input/change events (debounced)
+    let _saveTimer = null;
+    function scheduleSave() {
+      if (_saveTimer) clearTimeout(_saveTimer);
+      _saveTimer = setTimeout(saveFilterState, 250);
+    }
+    if (filterForm) {
+      filterForm.addEventListener('input', scheduleSave);
+      filterForm.addEventListener('change', scheduleSave);
+    }
+
+
+    // === PREVENT ACCIDENTAL FORM SUBMIT ON ENTER IN FILTER INPUTS ===
+    const filterForm_enter = document.getElementById('shipmentFilterForm');
+
+    if (filterForm_enter) {
+        filterForm_enter.addEventListener('keydown', function(e) {
+            // If user presses Enter in a text input, datalist, or select
+            if (e.key === 'Enter' && 
+                (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+                
+                e.preventDefault();  // Stop form submission
+                console.log('Enter key blocked in filter field — use Search button');
+                
+                // Optional: Give subtle feedback
+                showMessage('Press the Search button to apply filters.', 'info');
+            }
+        });
+
+        // Optional: Also allow Enter on the Search button itself (if it has focus)
+        const searchButton = filterForm_enter.querySelector('button[type="submit"]');
+        if (searchButton) {
+            searchButton.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.stopPropagation();  // Allow normal submit
+                }
+            });
+        }
+    }
+    // === Form Reset Functionality ===
+    const resetBtn = document.querySelector('button[name="filterReset"]');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = resetBtn.closest('form'); // More reliable than finding by ID if table is inside form
+
+        if (form) {
+          form.querySelectorAll('input, select').forEach(element => {
+            // 1. Skip buttons
+            if (element.type === 'submit' || element.type === 'button') return;
+
+            // 2. CHECK ACCOUNT RESTRICTIONS
+            // If the element is 'readonly', do not clear it.
+            if (element.hasAttribute('readonly')) {
+              return; 
+            }
+
+            // 3. Clear checkboxes or values
+            if (element.type === 'checkbox') {
+              element.checked = false;
+            } else {
+              element.value = '';
+            }
+          });
+
+          // Clear saved localStorage state
+          clearFilterState();
+
+          // 4. Submit the form to refresh the data
+          form.submit();
+        }
+      });
+    }
+  });
+</script>
+
+
+<!-- Custom CSS -->
+<style>
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+    height: 100%; /* Match original height consistency */
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+  }
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.25rem;
+    font-family: 'Poppins', sans-serif;
+  }
+</style>

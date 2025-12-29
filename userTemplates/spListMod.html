@@ -1,0 +1,262 @@
+{% load static %}
+<div id="jsonDataPrelistSuppliers" style="display: none;" data-json="{{ prelistSuppliers|safe }}"></div>
+
+<div class="shadow-lg rounded-3 p-4 bg-white" style="margin-bottom: 1rem;">
+  <h1 class="display-5 fw-bold text-primary mb-2 adminFormHeader">
+    <i class="bi bi-list-ul me-2"></i>SUPPLIER UPDATE FORM
+  </h1>
+  <!-- Display success/error messages -->
+  {% if messages %}
+    <div class="alert alert-dismissible fade show mb-3" role="alert">
+      {% for message in messages %}
+        <div class="alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endif %}
+  <!-- Display suppliers in a Bootstrap list group with search input -->
+  <div class="mb-3">
+    <label class="form-label fw-bold">Available Suppliers ({{ suppliers_list|length }}):</label>
+    <input type="text" id="supplierSearch" class="form-control form-control-sm mb-2" placeholder="Search suppliers (e.g., 삼신)">
+    <ul id="supplierListCell" class="list-group" style="max-height: 200px; overflow-y: auto;">
+      {% if suppliers_list %}
+        {% for supplier in suppliers_list %}
+          <li class="list-group-item list-group-item-sm" data-supplier="{{ supplier }}">{{ supplier }}</li>
+        {% endfor %}
+      {% else %}
+        <li class="list-group-item list-group-item-sm">No suppliers available</li>
+      {% endif %}
+    </ul>
+  </div>
+  <form method="POST" autocomplete="off" class="p-0" id="supplierUpdateForm">{% csrf_token %}
+    <table id="supplierForm" class="table table-bordered table-hover mb-0" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+      <thead>
+      <tr class="table-primary">
+        <th class="adminTableTh" style="width: 60%;">Supplier Name</th>
+        <th class="adminTableTh" style="width: 40%;">Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="adminTableTd">
+          <input class="form-control form-control-sm" type="text" id="id_supplierNameMod" name="supplierName" placeholder="Enter supplier name">
+          <input type="hidden" id="id_oldSupplierName" name="old_supplierName" value="">
+        </td>
+        <td class="adminTableTd">
+          <div class="d-flex flex-row justify-content-around">
+            <button class="btn btn-success btn-sm" type="submit" style="height: 1cm;" id="id_addSplMod" name="addSupplierMod" disabled>Add New</button>
+            <button class="btn btn-primary btn-sm" type="submit" style="height: 1cm;" id="id_modifySplMod" name="modifySupplierMod" disabled>Modify</button>
+            <button class="btn btn-danger btn-sm" type="submit" style="height: 1cm;" id="id_deleteSplMod" name="deleteSupplierMod" disabled>Delete</button>
+          </div>
+        </td>
+      </tr>
+      {% if supplierForm.supplierName.errors %}
+      <tr>
+        <td colspan="2" class="adminWarningFont">{{ supplierForm.supplierName.errors|striptags }}</td>
+      </tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </form>
+</div>
+
+<script>
+// Define selectSupplier in global scope
+function selectSupplier(element) {
+  console.log('selectSupplier called with element:', element);
+  const supplierName = element.getAttribute('data-supplier');
+  console.log('Supplier name:', supplierName);
+  const input = document.getElementById('id_supplierNameMod');
+  const hiddenInput = document.getElementById('id_oldSupplierName');
+  const modifyButton = document.getElementById('id_modifySplMod');
+  const deleteButton = document.getElementById('id_deleteSplMod');
+  if (!input || !hiddenInput || !modifyButton || !deleteButton) {
+    console.error('Missing DOM elements:', {
+      input: !!input,
+      hiddenInput: !!hiddenInput,
+      modifyButton: !!modifyButton,
+      deleteButton: !!deleteButton
+    });
+    return;
+  }
+  input.value = supplierName;
+  hiddenInput.value = supplierName;
+  input.focus();
+  // Highlight selected item
+  document.querySelectorAll('#supplierListCell .list-group-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  element.classList.add('active');
+  // Enable Modify and Delete buttons
+  modifyButton.disabled = false;
+  deleteButton.disabled = false;
+  console.log('Input updated, buttons enabled');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Load supplier list for client-side validation
+  let suppliers;
+  try {
+    suppliers = JSON.parse(document.getElementById('jsonDataPrelistSuppliers').dataset.json);
+    console.log('Suppliers loaded:', suppliers);
+  } catch (e) {
+    console.error('Error parsing suppliers JSON:', e);
+    suppliers = [];
+  }
+
+  // Cache original supplier list items
+  const supplierList = document.getElementById('supplierListCell');
+  const originalItems = Array.from(document.querySelectorAll('#supplierListCell .list-group-item'));
+
+  // Event delegation for supplier list clicks
+  if (supplierList) {
+    supplierList.addEventListener('click', function(e) {
+      const li = e.target.closest('.list-group-item');
+      if (li && li.hasAttribute('data-supplier')) {
+        selectSupplier(li);
+      }
+    });
+  }
+
+  // Search functionality
+  const supplierSearch = document.getElementById('supplierSearch');
+  if (supplierSearch) {
+    supplierSearch.addEventListener('input', function(e) {
+      const searchTerm = e.target.value.trim().toLowerCase();
+      console.log('Search term:', searchTerm);
+
+      // Restore original list
+      supplierList.innerHTML = '';
+      originalItems.forEach(item => supplierList.appendChild(item.cloneNode(true)));
+
+      // Filter items
+      const items = document.querySelectorAll('#supplierListCell .list-group-item');
+      let visibleCount = 0;
+      items.forEach(item => {
+        const supplier = item.getAttribute('data-supplier').toLowerCase();
+        console.log('Checking supplier:', supplier, 'against:', searchTerm, 'Match:', supplier.includes(searchTerm));
+        item.style.display = supplier.includes(searchTerm) ? '' : 'none';
+        if (supplier.includes(searchTerm)) visibleCount++;
+      });
+      console.log('Visible suppliers:', visibleCount);
+
+      // Show "No suppliers found" if no matches
+      if (visibleCount === 0) {
+        supplierList.innerHTML = '<li class="list-group-item list-group-item-sm">No suppliers found</li>';
+      }
+    });
+  }
+
+  // Enable Add New button and validate input
+  const inputElement = document.getElementById('id_supplierNameMod');
+  const addButton = document.getElementById('id_addSplMod');
+  if (inputElement && addButton) {
+    inputElement.addEventListener('input', function() {
+      const supplierName = this.value.trim();
+      const isDuplicate = suppliers.some(s => s.toLowerCase() === supplierName.toLowerCase());
+      const modifyButton = document.getElementById('id_modifySplMod');
+      addButton.disabled = !supplierName || isDuplicate;
+      // Allow Modify if the name is not a duplicate (unless it's the same as old name)
+      if (modifyButton && modifyButton.disabled === false) {
+        const oldName = document.getElementById('id_oldSupplierName').value;
+        modifyButton.disabled = !supplierName || (isDuplicate && supplierName.toLowerCase() !== oldName.toLowerCase());
+      }
+    });
+  }
+
+  // Form submission validation
+  const form = document.getElementById('supplierUpdateForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      const supplierName = document.getElementById('id_supplierNameMod').value.trim();
+      const oldName = document.getElementById('id_oldSupplierName').value;
+      const isAdd = document.activeElement.id === 'id_addSplMod';
+      const isModify = document.activeElement.id === 'id_modifySplMod';
+      const isDelete = document.activeElement.id === 'id_deleteSplMod';
+
+      if (!supplierName && (isAdd || isModify)) {
+        e.preventDefault();
+        alert('Supplier name cannot be empty.');
+        return;
+      }
+      if (isAdd && suppliers.some(s => s.toLowerCase() === supplierName.toLowerCase())) {
+        e.preventDefault();
+        alert('Supplier name already exists.');
+        return;
+      }
+      if (isModify && suppliers.some(s => s.toLowerCase() === supplierName.toLowerCase()) && supplierName.toLowerCase() !== oldName.toLowerCase()) {
+        e.preventDefault();
+        alert('Modified supplier name already exists.');
+        return;
+      }
+      if (isDelete && !oldName) {
+        e.preventDefault();
+        alert('Please select a supplier to delete.');
+        return;
+      }
+    });
+
+    // Clear form after submission
+    form.addEventListener('submit', function() {
+      setTimeout(() => {
+        document.getElementById('id_supplierNameMod').value = '';
+        document.getElementById('id_oldSupplierName').value = '';
+        document.getElementById('id_addSplMod').disabled = true;
+        document.getElementById('id_modifySplMod').disabled = true;
+        document.getElementById('id_deleteSplMod').disabled = true;
+        document.querySelectorAll('#supplierListCell .list-group-item').forEach(item => {
+          item.classList.remove('active');
+        });
+      }, 100);
+    });
+  }
+});
+</script>
+
+<style>
+  .adminTableTh, .adminTableTd {
+    vertical-align: middle;
+    text-align: center;
+  }
+  .adminWarningFont {
+    color: #cd2525;
+    font-size: 0.9rem;
+  }
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+  }
+  .table-hover tbody tr:hover {
+    background-color: #d1ecf1;
+  }
+  .list-group-item-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  .list-group-item-sm:hover {
+    background-color: #f8f9fa;
+  }
+  .list-group-item-sm.active {
+    background-color: #d1ecf1;
+    border-color: #3498db;
+  }
+  .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+  .alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+</style>

@@ -1,0 +1,350 @@
+{% load static %}
+
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container-fluid py-3 shipmentBox">
+  <!-- Header -->
+  <h1 class="display-5 fw-bold text-primary mb-5 shipmentFormHeader">
+    <i class="bi bi-box-seam me-2"></i>Add New Shipment
+  </h1>
+
+  <!-- Form with shadow and rounded corners, wider table -->
+  <form method="POST" enctype="multipart/form-data" class="shadow-lg rounded-3 p-3 bg-white"
+  style="max-width: 100%; margin: 0 auto; margin-bottom: 1rem;">{% csrf_token %}
+    <input class="form-control" type="text" style="display: none;" id="id_clicked" name="clicked" value="">
+
+    <!-- Table with modern styling, wider -->
+    <table id="shipmentRegForm" class="table table-bordered table-hover mb-0" style="width: 100%; border-radius: 0.5rem; overflow: hidden; table-layout: fixed;">
+      <tbody>
+        <!-- Row 1 -->
+        <tr class="table-primary">
+          <th scope="col" class="shipmentTableTh">COMPANY</th>
+          <th scope="col" class="shipmentTableTh">VESSEL</th>
+          <th scope="col" class="shipmentTableTh">DOCS</th>
+          <th scope="col" class="shipmentTableTh">PO.NO</th>
+          <th scope="col" class="shipmentTableTh">ASK.NO</th>
+
+        </tr>
+        <tr>
+          <!-- <td><select class="form-select shipmentTableTd" id="id_prelistCompanies" name="company"></select></td>
+            -->
+          <td>
+            <input class="form-control shipmentTableTd" type="text" list="datalistCompaniesReg" id="id_prelistCompanies" name="company" placeholder="Select or type">
+            <datalist id="datalistCompaniesReg"></datalist>
+          </td>
+          <td>
+            <input class="form-control shipmentTableTd" type="text" list="datalistVessels" id="id_pickVessels" name="vessel" placeholder="Select or type">
+            <datalist id="datalistVessels"></datalist>
+          </td>
+          <td><textarea class="form-control shipmentTableTd" maxlength="500" id="id_docs" name="docs"></textarea></td>
+          <td><textarea class="form-control shipmentTableTd" maxlength="1000" id="id_POno" name="POno"></textarea></td>
+          <td><textarea class="form-control shipmentTableTd" maxlength="1000" id="id_ASKno" name="ASKno"></textarea></td>
+        </tr>
+
+        <!-- Row 2 -->
+        <tr class="table-primary">
+          <th scope="col" class="shipmentTableTh">SUPPLIER</th>
+          <th scope="col" class="shipmentTableTh">DIVISION</th>
+          <th scope="col" class="shipmentTableTh">JOB.NO</th>
+          <th scope="col" class="shipmentTableTh">C.PACKING</th>
+          <th scope="col" class="shipmentTableTh">QTY</th>
+
+        </tr>
+        <tr>
+          <td>
+            <input class="form-control shipmentTableTd" type="text" list="datalistSuppliers" placeholder="Select or type" id="id_supplier" name="supplier">
+            <datalist id="datalistSuppliers"></datalist>
+          </td>
+          <td><select class="form-select shipmentTableTd" id="id_division" name="division"></select></td>
+          <td><input class="form-control shipmentTableTd" type="text" id="id_job_number" name="job_number"></td>
+          <td><select class="form-select shipmentTableTd" id="id_c_packing" name="c_packing"></select></td>
+          <td><input class="form-control shipmentTableTd" type="text" id="id_quanty" name="quanty"></td>
+
+        </tr>
+
+        <!-- Row 3 -->
+        <tr class="table-primary">
+          <th scope="col" class="shipmentTableTh">UNIT</th>
+          <th scope="col" class="shipmentTableTh">SIZE</th>
+          <th scope="col" class="shipmentTableTh">WEIGHT</th>
+          <th scope="col" class="shipmentTableTh">IN</th>
+          <th scope="col" class="shipmentTableTh">W/H</th>
+        </tr>
+        <tr>
+          <td><input class="form-control shipmentTableTd" type="text" list="datalistUnits" id="id_pickUnits" name="unit" placeholder="Select or type">
+            <datalist id="datalistUnits"></datalist></td>
+          <td><textarea class="form-control shipmentTableTd" maxlength="200" id="id_size" name="size"></textarea></td>
+          <td><input class="form-control shipmentTableTd" type="text" id="id_weight" name="weight"></td>
+          <td><input class="form-control shipmentTableTd" type="text" id="id_in_date" name="in_date" placeholder="YYYYMMDD"></td>
+          <td><input class="form-control shipmentTableTd" type="text" list="datalistWH1" id="id_pickWH1" name="warehouse" placeholder="Select or type">
+            <datalist id="datalistWH1"></datalist></td>
+        </tr>
+        {% if shipmentRegForm.in_date.errors %}
+        <tr>
+          <td colspan="5" class="text-danger py-2">{{ shipmentRegForm.in_date.errors|striptags }}</td>
+        </tr>
+        {% endif %}
+
+        <!-- Row 4 -->
+        <tr class="table-primary">
+          <th scope="col" class="shipmentTableTh">MEMO</th>
+          <th scope="col" class="shipmentTableTh">BY</th>
+          <th scope="col" class="shipmentTableTh">BLNO</th>
+          <th scope="col" class="shipmentTableTh">PORT</th>
+          <th scope="col" class="shipmentTableTh">ON BOARD DATE</th>
+        </tr>
+        <tr>
+          <td><textarea class="form-control shipmentTableTd" maxlength="1000" id="id_memo" name="memo"></textarea></td>
+          <td><select class="form-select shipmentTableTd" id="id_by" name="by"></select></td>
+          <td><input class="form-control shipmentTableTd" type="text" id="id_BLno" name="BLno"></td>
+          <td><input class="form-control shipmentTableTd" type="text" id="id_port" name="port"></td>
+          <td><input class="form-control shipmentTableTd" type="text" id="id_out_date" name="out_date" placeholder="YYYYMMDD"></td>
+        </tr>
+        {% if shipmentRegForm.out_date.errors %}
+        <tr>
+          <td colspan="5" class="text-danger py-2">{{ shipmentRegForm.out_date.errors|striptags }}</td>
+        </tr>
+        {% endif %}
+
+        <!-- Row 5: PDF (colspan=1), IMG (colspan=1), EXCEL (colspan=2), ACTION (colspan=1) -->
+        <tr class="table-primary">
+          <th scope="col" class="shipmentTableTh">REMARK</th>
+          <th scope="col" class="shipmentTableTh" style="width: 20%;">PDF</th>
+          <th scope="col" class="shipmentTableTh" style="width: 20%;">IMG</th>
+          <th scope="col" class="shipmentTableTh excel-header" style="width: 20%;">EXCEL</th>
+          <th scope="col" class="shipmentTableTh" style="width: 20%;">ACTION</th>
+        </tr>
+        <tr>
+          <td><textarea class="form-control shipmentTableTd" maxlength="1000" id="id_remark" name="remark"></textarea></td>
+          <td style="width: 20%;">
+            <div class="d-flex flex-column gap-1">
+              <input class="form-control shipmentTableTd" type="file" id="id_pdf_file" name="pdf_file" accept=".pdf" multiple>
+              <button class="btn btn-outline-secondary btn-sm" type="button" id="id_clearPdf" name="clearPdf">Clear</button>
+            </div>
+          </td>
+          <td style="width: 20%;">
+            <div class="d-flex flex-column gap-1">
+              <input class="form-control shipmentTableTd" type="file" id="id_image" name="image_file" accept="image/*" multiple>
+              <button class="btn btn-outline-secondary btn-sm" type="button" id="id_clearImage" name="clearImage">Clear</button>
+            </div>
+          </td>
+          <td style="width: 20%;">
+            <div class="d-flex flex-column gap-1">
+              <input class="form-control shipmentTableTd" type="file" id="id_excel_file" name="excel_file" accept=".xls,.xlsx">
+              <div class="d-flex flex-row gap-2 justify-content-center">
+                <button class="btn btn-outline-secondary btn-sm" type="button" id="id_clearExcel" name="clearExcel">Clear</button>
+                <button class="btn btn-primary btn-sm" type="submit" name="uploadExcel">Upload Excel</button>
+              </div>
+            </div>
+          </td>
+          <td style="width: 20%;">
+            <div class="d-flex flex-column gap-1">
+              <button class="btn btn-success btn-sm" type="submit" name="addShipment">Save</button>
+              <button class="btn btn-warning btn-sm" type="submit" name="adjustShipment">Update</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+
+<!-- Scripts -->
+<script>
+  // Flatpickr configuration for both "IN" and "ON BOARD DATE"
+  const datePickerConfig = {
+    dateFormat: 'Ymd', // Display and output as YYYYMMDD (e.g., "20250311")
+    allowInput: true,  // Allow manual typing
+    onChange: function(selectedDates, dateStr, instance) {
+      instance.element.value = dateStr; // Ensure YYYYMMDD
+    },
+    onClose: function(selectedDates, dateStr, instance) {
+      if (dateStr && dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+        const year = dateStr.slice(0, 4);
+        const month = dateStr.slice(4, 6);
+        const day = dateStr.slice(6, 8);
+        const date = new Date(year, month - 1, day);
+        if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day) {
+          alert('Invalid date! Please enter a valid date in YYYYMMDD format.');
+          instance.clear();
+        }
+      } else if (dateStr && dateStr.length !== 8) {
+        alert('Date must be in YYYYMMDD format (8 digits)!');
+        instance.clear();
+      }
+    }
+  };
+
+  // Initialize Flatpickr for "IN"
+  flatpickr('#id_in_date', datePickerConfig);
+
+  // Initialize Flatpickr for "ON BOARD DATE"
+  flatpickr('#id_out_date', datePickerConfig);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Handle paste event for all relevant text areas (remove quotes)
+    const textAreas = [
+      document.getElementById('id_docs'),  // DOCS field
+      document.getElementById('id_odr'),   // ODR field
+      document.getElementById('id_size'),  // SIZE field
+      document.getElementById('id_memo'),  // MEMO field
+      document.getElementById('id_remark'), // REMARK field
+      document.getElementById('id_ASKno'), // Added ASKno
+      document.getElementById('id_POno'), // REMARK field
+    ];
+
+    textAreas.forEach(textArea => {
+      if (textArea) {
+        textArea.addEventListener('paste', (e) => {
+          // Prevent the default paste behavior
+          e.preventDefault();
+
+          // Get the pasted text from the clipboard
+          const pastedText = (e.clipboardData || window.clipboardData).getData('text/plain');
+
+          // Log the raw clipboard data for debugging
+          console.log('Raw clipboard data:', JSON.stringify(pastedText));
+
+          // Normalize the text: trim whitespace and normalize line endings
+          let cleanedText = pastedText.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+          // Remove surrounding quotation marks (including curly quotes)
+          const quoteTypes = ['"', '"', '"']; // Straight, left curly, right curly quotes
+          quoteTypes.forEach(quote => {
+            if (cleanedText.startsWith(quote) && cleanedText.endsWith(quote)) {
+              cleanedText = cleanedText.slice(1, -1);
+            }
+          });
+
+          // Handle Excel's escaped quotes (e.g., "" for a single quote within the text)
+          cleanedText = cleanedText.replace(/""/g, '"');
+
+          // Remove quotes from individual lines and trim whitespace
+          cleanedText = cleanedText.split('\n').map(line => {
+            let trimmedLine = line.trim();
+            quoteTypes.forEach(quote => {
+              if (trimmedLine.startsWith(quote) && trimmedLine.endsWith(quote)) {
+                trimmedLine = trimmedLine.slice(1, -1);
+              }
+            });
+            return trimmedLine;
+          }).filter(line => line.length > 0).join('\n'); // Remove empty lines
+
+          // Log the cleaned text for debugging
+          console.log('Cleaned text:', JSON.stringify(cleanedText));
+
+          // Get the current cursor position in the text area
+          const startPos = textArea.selectionStart;
+          const endPos = textArea.selectionEnd;
+          const currentValue = textArea.value;
+
+          // Insert the cleaned text at the cursor position
+          textArea.value = currentValue.substring(0, startPos) + cleanedText + currentValue.substring(endPos);
+
+          // Move the cursor to the end of the pasted text
+          const newCursorPos = startPos + cleanedText.length;
+          textArea.setSelectionRange(newCursorPos, newCursorPos);
+
+          // Provide visual feedback
+          textArea.style.borderColor = '#007bff'; // Highlight on paste
+          setTimeout(() => {
+            textArea.style.borderColor = ''; // Reset after 500ms
+          }, 500);
+        });
+      }
+    });
+
+    // Handle QTY field to remove decimal points and ensure whole numbers
+    const qtyInput = document.getElementById('id_quanty');
+    if (qtyInput) {
+      qtyInput.addEventListener('input', (e) => {
+        let value = e.target.value;
+
+        // Remove any non-numeric characters except for the decimal point
+        value = value.replace(/[^0-9.]/g, '');
+
+        // Parse the value as a float and convert to an integer to remove decimals
+        if (value !== '') {
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            value = Math.floor(numValue).toString(); // Remove decimal points (e.g., 1.0 -> 1, 0.0 -> 0)
+          } else {
+            value = ''; // Clear the field if the input is invalid
+          }
+        }
+
+        // Update the input field with the cleaned-up value
+        e.target.value = value;
+      });
+
+      // Ensure the value is an integer on form submission
+      qtyInput.closest('form').addEventListener('submit', (e) => {
+        let value = qtyInput.value;
+        if (value !== '') {
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            qtyInput.value = Math.floor(numValue).toString();
+          } else {
+            qtyInput.value = '';
+          }
+        }
+      });
+    }
+  });
+
+</script>
+
+
+<!-- Custom CSS -->
+<style>
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+  }
+  .table {
+    table-layout: fixed;
+  }
+  .pdf-img-column {
+    width: 40% !important;
+  }
+
+  /* Custom styling for the "Upload Excel" button */
+  button[name="uploadExcel"] {
+    background-color: #107C41; /* Excel green */
+    border-color: #107C41;
+    color: white; /* Ensure text is white for contrast */
+  }
+
+  button[name="uploadExcel"]:hover {
+    background-color: #1a9c54; /* Lighter green on hover */
+    border-color: #1a9c54;
+    transform: scale(1.05); /* Keep the existing hover effect */
+  }
+
+  /* Custom styling for the "EXCEL" header */
+  .excel-header {
+    background-color: #107C41 !important; /* Excel green, override table-primary */
+    color: white !important; /* White text for contrast */
+    transition: background-color 0.3s; /* Smooth transition for hover */
+  }
+
+  .excel-header:hover {
+    background-color: #1a9c54 !important; /* Lighter green on hover */
+  }
+</style>

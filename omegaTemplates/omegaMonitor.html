@@ -1,0 +1,20 @@
+{% extends "mainBody.html" %}
+
+{% block bodyContent %}
+<div class="container-fluid flex-column">
+  <div class="row">
+    <div class="container-lg-1 p-3">{% include "monitorU.html" %}</div>
+  </div>
+</div>
+
+
+<style>
+  td.omegaRowTitle {
+    background-color: lightblue;
+  }
+  table, tr, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+</style>
+{% endblock bodyContent %}

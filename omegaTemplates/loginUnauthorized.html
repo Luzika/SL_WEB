@@ -1,0 +1,40 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap">
+    
+    <!-- Ensure Full Height on Body -->
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+        font-family: 'Poppins', sans-serif;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="loginBox">
+      <!-- Kickout Message -->
+      <h1 class="display-4 fw-bold text-success mb-4">
+        <i class="bi bi-check-circle-fill me-2"></i>Login Unauthorized!
+      </h1>
+
+      <h2 class="text-primary mb-3">Sorry, you are unauthorized yet!</h2>
+      <h2 class="text-muted">
+        Please return to the login page and validate  
+        <a href="{% url 'loginPage' %}" class="btn buttonWelcome">Here</a>
+      </h2>
+    </div>
+  </body>
+
+</html>

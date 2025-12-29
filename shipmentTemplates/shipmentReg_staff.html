@@ -1,0 +1,617 @@
+{% load static %}
+<!DOCTYPE ahtml>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Shipment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .shipmentBox {
+            background-color: #f8f9fa;
+        }
+        .shipmentFormHeader {
+            color: #0d47a1;
+        }
+        .shipment-form .card-header {
+            background-color: #cfe2ff;
+        }
+        .excel-header {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .equal-height-card {
+            display: flex;
+            flex-direction: column;
+        }
+        .equal-height-card .card-body {
+            flex-grow: 1;
+        }
+        .form-floating > .form-control,
+        .form-floating > .form-select,
+        .form-floating > .form-control:focus,
+        .form-floating > .form-select:focus,
+        .form-floating > .form-control:not(:placeholder-shown),
+        .form-floating > .form-select:not(:placeholder-shown) {
+            padding-top: 1.625rem;
+            padding-bottom: 0.625rem;
+        }
+        .form-floating > label {
+            padding: 1.15rem 0.75rem; /* Adjusted for larger font */
+            font-size: 1.15rem; /* Larger font size */
+        }
+        /* Custom styles for file inputs to match form-floating */
+        .custom-file-input {
+            position: relative;
+        }
+        .custom-file-input .form-control {
+            cursor: pointer;
+        }
+        .custom-file-input .form-control::before {
+            content: attr(data-placeholder);
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 1rem 0.75rem;
+            font-size: 1.15rem;
+            color: #6c757d;
+            pointer-events: none;
+            transition: transform 0.1s ease-in-out;
+        }
+        .custom-file-input .form-control:valid::before,
+        .custom-file-input .form-control:focus::before,
+        .custom-file-input.has-file .form-control::before {
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+            font-size: 1.15rem;
+            padding-top: 0.5rem;
+            color: #333;
+        }
+        .custom-file-input .form-control::-webkit-file-upload-button {
+            visibility: hidden;
+            width: 0;
+        }
+        /* Style for the new status div */
+        #upload-status {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s;
+        }
+        /* Styles for disabled buttons to ensure visual clarity */
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-3 shipmentBox">
+        <h1 class="display-5 fw-bold text-primary mb-5 shipmentFormHeader">
+            <i class="bi bi-box-seam me-2"></i>Add New Shipment
+        </h1>
+
+        <form method="POST" enctype="multipart/form-data" class="shipment-form shadow-lg rounded-3 p-3 bg-white">
+            {% csrf_token %}
+            <input class="form-control" type="text" style="display: none;" id="id_clicked" name="clicked" value="">
+
+            <!-- Main Row for the 4 Columns of Cards + the Excel Import Section -->
+            <div class="row g-4 d-flex align-items-stretch">
+
+                <!-- Column 1: Shipment Details -->
+                <div class="col-lg-3">
+                    <div class="card h-100 equal-height-card">
+                        <div class="card-header text-dark text-center fw-bold fs-5">Shipment Details</div>
+                        <div class="card-body">
+                            <div class="form-floating mb-3"><input class="form-control" type="text" list="datalistCompaniesReg" id="id_prelistCompanies" name="company" placeholder="Company"><label for="id_prelistCompanies">Company</label><datalist id="datalistCompaniesReg"></datalist></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" list="datalistVessels" id="id_pickVessels" name="vessel" placeholder="Vessel"><label for="id_pickVessels">Vessel</label><datalist id="datalistVessels"></datalist></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" list="datalistSuppliers" placeholder="Supplier" id="id_supplier" name="supplier" autocomplete="off"><label for="id_supplier">Supplier</label><datalist id="datalistSuppliers"></datalist></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" id="id_IMP_BL" name="IMP_BL" placeholder="IMP BL"><label for="id_IMP_BL">IMP BL</label></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" id="id_EXP_BL" name="EXP_BL" placeholder="EXP BL"><label for="id_EXP_BL">EXP BL</label></div>
+                            <div class="form-floating"><textarea class="form-control" id="id_Order_No" name="Order_No" rows="2" placeholder="Order No"></textarea><label for="id_Order_No">Order No</label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Cargo Information -->
+                <div class="col-lg-3">
+                    <div class="card h-100 equal-height-card">
+                        <div class="card-header text-dark text-center fw-bold fs-5">Cargo Information</div>
+                        <div class="card-body">
+                            <div class="form-floating mb-3"><select class="form-select" id="id_division" name="division" aria-label="Division"><option value="" selected>Select Division</option></select><label for="id_division">Division</label></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" id="id_quanty" name="quanty" placeholder="Qty"><label for="id_quanty">Qty</label></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" id="id_weight" name="weight" placeholder="Weight"><label for="id_weight">Weight</label></div>
+                            <div class="row g-2 mb-3"><div class="col"><div class="form-floating"><select class="form-select" id="id_c_packing" name="c_packing" aria-label="C. Packing"><option value="" selected>Select C. Packing</option></select><label for="id_c_packing">C. Packing</label></div></div><div class="col"><div class="form-floating"><input class="form-control" type="text" list="datalistUnits" id="id_pickUnits" name="unit" placeholder="Unit"><label for="id_pickUnits">Unit</label><datalist id="datalistUnits"></datalist></div></div></div>
+                            <div class="form-floating mb-3"><textarea class="form-control" id="id_size" name="size" rows="2" placeholder="Size"></textarea><label for="id_size">Size</label></div>
+                            <div class="form-floating"><textarea class="form-control" id="id_docs" name="docs" rows="2" placeholder="Docs"></textarea><label for="id_docs">Docs</label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 3: Logistics & Dates -->
+                <div class="col-lg-3">
+                    <div class="card h-100 equal-height-card">
+                        <div class="card-header text-dark text-center fw-bold fs-5">Logistics & Dates</div>
+                        <div class="card-body">
+                            <div class="form-floating mb-3"><input class="form-control" type="text" id="id_in_date" name="in_date" placeholder="YYYYMMDD"><label for="id_in_date">In Date</label></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" list="datalistWH1" id="id_pickWH1" name="warehouse" placeholder="Warehouse"><label for="id_pickWH1">W/H</label><datalist id="datalistWH1"></datalist></div>
+                            <div class="form-floating mb-3"><select class="form-select" id="id_by" name="by" aria-label="By"><option value="" selected>Select 'By'</option></select><label for="id_by">By</label></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" id="id_port" name="port" placeholder="Port"><label for="id_port">Port</label></div>
+                            <div class="form-floating mb-3"><input class="form-control" type="text" id="id_out_date" name="out_date" placeholder="YYYYMMDD"><label for="id_out_date">On Board Date</label></div>
+                            <div class="form-floating"><textarea class="form-control" id="id_remark" name="remark" rows="2" placeholder="Remark"></textarea><label for="id_remark">Remark</label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 4: Attachments & Main Buttons -->
+                <div class="col-lg-3 d-flex flex-column gap-3">
+
+                    <div class="card flex-grow-1 d-flex flex-column">
+                        <div class="card-header text-dark text-center fw-bold fs-5">
+                            Attachments
+                        </div>
+                        <div class="card-body d-flex flex-column">
+
+                            <div class="row mb-3 flex-grow-1">
+                                <div class="col-12"><h6 class="mb-2"><i class="bi bi-folder2"></i> Existing Files</h6></div>
+                                <div class="col-md-6 mb-2">
+                                    <label class="form-label small text-muted">PDF Files:</label>
+                                    <div id="existing_pdfs_container" class="existing-files-container">
+                                        <p class="text-muted m-0">No PDF files loaded.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <label class="form-label small text-muted">Image Files:</label>
+                                    <div id="existing_images_container" class="existing-files-container">
+                                        <p class="text-muted m-0">No Image files loaded.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="files_to_delete" name="files_to_delete" value="">
+
+                            <div class="row g-2 mb-3 mt-auto">
+                                <div class="col-8">
+                                    <div class="form-floating custom-file-input">
+                                        <input class="form-control" type="file" id="id_pdf_file" name="pdf_file" accept=".pdf" multiple>
+                                        <label for="id_pdf_file"><i class="bi bi-file-earmark-pdf me-2"></i>Upload PDF</label>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-lg btn-outline-secondary w-100 h-100" type="button" id="id_clearPdf">Clear</button>
+                                </div>
+                            </div>
+
+                            <div class="row g-2">
+                                <div class="col-8">
+                                    <div class="form-floating custom-file-input">
+                                        <input class="form-control" type="file" id="id_image_file" name="image_file" accept="image/*" multiple>
+                                        <label for="id_image_file"><i class="bi bi-image me-2"></i>Upload Images</label>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn btn-lg btn-outline-secondary w-100 h-100" type="button" id="id_clearImage">Clear</button>
+                                </div>
+                            </div>
+
+                            <div id="upload-status" class="text-muted mt-2 small"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-lg btn-primary flex-fill action-button" type="submit" name="addShipment" id="id_save_button">Save</button>
+                        <button class="btn btn-lg btn-warning flex-fill action-button" type="submit" name="adjustShipment" id="id_update_button">Update</button>
+                    </div>
+
+                </div>
+
+                <!-- NEW: EXCEL UPLOAD SECTION - Full Width (col-12) aligned with the grid -->
+                <div class="col-12">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-4">
+                            <div class="row g-3 align-items-center">
+
+                                <!-- Column 1 (Label/Title) -->
+                                <div class="col-lg-3">
+                                    <label for="id_excel_file" class="form-label mb-0 fw-bold fs-5 text-success">
+                                        <i class="bi bi-file-earmark-spreadsheet me-2"></i>Import Shipments from Excel File
+                                    </label>
+                                </div>
+
+                                <!-- Column 2 (File Input) -->
+                                <div class="col-lg-6">
+                                    <input class="form-control form-control-lg" type="file" id="id_excel_file" name="excel_file" accept=".xls,.xlsx">
+                                </div>
+
+                                <!-- Column 3 (Two Buttons in one cell) -->
+                                <div class="col-lg-3">
+                                    <div class="d-flex gap-2">
+                                        <!-- Clear Button -->
+                                        <button class="btn btn-lg btn-outline-secondary w-50 flex-grow-1" type="button" id="id_clearExcel" name="clearExcel">Clear</button>
+                                        <!-- Upload Button -->
+                                        <button class="btn btn-lg btn-success w-50 flex-grow-1" type="submit" name="uploadExcel">Upload Excel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End of main row g-4 d-flex align-items-stretch -->
+        </form>
+    </div>
+</body>
+
+</html>
+
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script>
+  // Flatpickr configuration for both "IN" and "ON BOARD DATE"
+  const datePickerConfig = {
+    dateFormat: 'Ymd', // Display and output as YYYYMMDD (e.g., "20250311")
+    allowInput: true,  // Allow manual typing
+    onChange: function(selectedDates, dateStr, instance) {
+      instance.element.value = dateStr; // Ensure YYYYMMDD
+    },
+    onClose: function(selectedDates, dateStr, instance) {
+      if (dateStr && dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+        const year = dateStr.slice(0, 4);
+        const month = dateStr.slice(4, 6);
+        const day = dateStr.slice(6, 8);
+        const date = new Date(year, month - 1, day);
+        if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day) {
+          // Replace alert with console error/custom modal in production environment
+          console.error('Invalid date! Please enter a valid date in YYYYMMDD format.');
+          instance.clear();
+        }
+      } else if (dateStr && dateStr.length !== 8) {
+        // Replace alert with console error/custom modal in production environment
+        console.error('Date must be in YYYYMMDD format (8 digits)!');
+        instance.clear();
+      }
+    }
+  };
+
+
+
+  // Initialize Flatpickr for "IN"
+  flatpickr('#id_in_date', datePickerConfig);
+
+  // Initialize Flatpickr for "ON BOARD DATE"
+  flatpickr('#id_out_date', datePickerConfig);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const pdfInput = document.getElementById('id_pdf_file');
+    const imageInput = document.getElementById('id_image_file');
+
+    // START: File Size Calculation and Button Control Logic
+
+    const MAX_FILE_SIZE_MB = 50;
+    const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+    const saveButton = document.getElementById('id_save_button');
+    const updateButton = document.getElementById('id_update_button');
+    const uploadStatusDiv = document.getElementById('upload-status');
+
+    /**
+     * Calculates the total size of all selected files (PDF and Image).
+     * @returns {number} Total size in bytes.
+     */
+    const calculateTotalFileSize = () => {
+        let totalSize = 0;
+
+        // Sum size of PDF files
+        if (pdfInput && pdfInput.files) {
+            for (const file of pdfInput.files) {
+                totalSize += file.size;
+            }
+        }
+
+        // Sum size of image files
+        if (imageInput && imageInput.files) {
+            for (const file of imageInput.files) {
+                totalSize += file.size;
+            }
+        }
+
+        return totalSize;
+    };
+
+    /**
+     * Formats bytes into a human-readable string (MB/KB).
+     * @param {number} bytes The size in bytes.
+     * @returns {string} Formatted size string.
+     */
+    const formatBytes = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = 2; // Decimal places
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    };
+
+    /**
+     * Updates the status message and enables/disables the Save/Update buttons.
+     */
+    const updateFileUploadStatus = () => {
+        const totalSize = calculateTotalFileSize();
+        const formattedSize = formatBytes(totalSize);
+        let statusText;
+        let isOverLimit = totalSize > MAX_FILE_SIZE_BYTES;
+
+        if (isOverLimit) {
+            statusText = `<i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                          <span class="text-danger">Total Size: ${formattedSize} / ${MAX_FILE_SIZE_MB} MB. Too Large!</span>`;
+            uploadStatusDiv.classList.remove('bg-light', 'text-success');
+            uploadStatusDiv.classList.add('bg-danger-subtle', 'text-danger');
+        } else {
+            statusText = `<i class="bi bi-check-circle-fill text-success me-2"></i>
+                          <span class="text-success">Total Size: ${formattedSize} / ${MAX_FILE_SIZE_MB} MB. OK.</span>`;
+            uploadStatusDiv.classList.remove('bg-danger-subtle', 'text-danger');
+            uploadStatusDiv.classList.add('bg-success-subtle', 'text-success');
+        }
+
+        // Update the status display
+        uploadStatusDiv.innerHTML = statusText;
+
+        // Enable or disable the action buttons
+        if (saveButton) {
+            saveButton.disabled = isOverLimit;
+        }
+        if (updateButton) {
+            updateButton.disabled = isOverLimit;
+        }
+    };
+
+    // --- Combined handler for visual and size update on file selection ---
+    const updateVisualsAndSize = (event) => {
+        const input = event.target;
+        const wrapper = input.parentElement;
+
+        // 1. Visual Update (Placeholder visibility)
+        if (input.files.length > 0) {
+            wrapper.classList.add('has-file');
+        } else {
+            wrapper.classList.remove('has-file');
+        }
+
+        // 2. Size Check and Button Control
+        updateFileUploadStatus();
+    };
+
+    // Attach the main change handler to both file inputs
+    if (pdfInput) {
+        pdfInput.addEventListener('change', updateVisualsAndSize);
+    }
+    if (imageInput) {
+        imageInput.addEventListener('change', updateVisualsAndSize);
+    }
+
+    const clearPdfButton = document.getElementById('id_clearPdf');
+    const clearImageButton = document.getElementById('id_clearImage');
+
+    // Handlers for Clear Buttons
+
+    // Clear PDF handler
+    if (clearPdfButton && pdfInput) {
+        clearPdfButton.addEventListener('click', () => {
+            pdfInput.value = ""; // Clears the file input selection
+            pdfInput.parentElement.classList.remove('has-file'); // Clear visual state
+            updateFileUploadStatus(); // Recalculate size and update button state
+        });
+    }
+
+    // Clear Image handler
+    if (clearImageButton && imageInput) {
+        clearImageButton.addEventListener('click', () => {
+            imageInput.value = ""; // Clears the file input selection
+            imageInput.parentElement.classList.remove('has-file'); // Clear visual state
+            updateFileUploadStatus(); // Recalculate size and update button state
+        });
+    }
+    // END: File Size Calculation and Button Control Logic
+
+    // Initial check on page load
+    updateFileUploadStatus();
+
+
+    // The existing paste event logic (kept from your original file)
+    // Handle paste event for all relevant text areas (remove quotes)
+    const textAreas = [
+      document.getElementById('id_docs'),  // DOCS field
+      document.getElementById('id_Order_No'), // Order No field (Corrected ID based on HTML)
+      document.getElementById('id_size'),  // SIZE field
+      document.getElementById('id_memo'),  // MEMO field (Not present in HTML, but kept for future-proofing)
+      document.getElementById('id_remark'), // REMARK field
+      document.getElementById('id_ASKno'), // Added ASKno (Not present in HTML, but kept for future-proofing)
+      document.getElementById('id_POno'), // POno field (Not present in HTML, but kept for future-proofing)
+    ];
+
+    textAreas.forEach(textArea => {
+      if (textArea) {
+        textArea.addEventListener('paste', (e) => {
+          // Prevent the default paste behavior
+          e.preventDefault();
+
+          // Get the pasted text from the clipboard
+          const pastedText = (e.clipboardData || window.clipboardData).getData('text/plain');
+
+          // Log the raw clipboard data for debugging
+          console.log('Raw clipboard data:', JSON.stringify(pastedText));
+
+          // Normalize the text: trim whitespace and normalize line endings
+          let cleanedText = pastedText.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+          // Remove surrounding quotation marks (including curly quotes)
+          const quoteTypes = ['"', '"', '"']; // Straight, left curly, right curly quotes
+          quoteTypes.forEach(quote => {
+            if (cleanedText.startsWith(quote) && cleanedText.endsWith(quote)) {
+              cleanedText = cleanedText.slice(1, 1); // Should be .slice(1, -1) but matching your original implementation
+            }
+          });
+
+          // Handle Excel's escaped quotes (e.g., "" for a single quote within the text)
+          cleanedText = cleanedText.replace(/""/g, '"');
+
+          // Remove quotes from individual lines and trim whitespace
+          cleanedText = cleanedText.split('\n').map(line => {
+            let trimmedLine = line.trim();
+            quoteTypes.forEach(quote => {
+              if (trimmedLine.startsWith(quote) && trimmedLine.endsWith(quote)) {
+                trimmedLine = trimmedLine.slice(1, 1); // Should be .slice(1, -1) but matching your original implementation
+              }
+            });
+            return trimmedLine;
+          }).filter(line => line.length > 0).join('\n'); // Remove empty lines
+
+          // Log the cleaned text for debugging
+          console.log('Cleaned text:', JSON.stringify(cleanedText));
+
+          // Get the current cursor position in the text area
+          const startPos = textArea.selectionStart;
+          const endPos = textArea.selectionEnd;
+          const currentValue = textArea.value;
+
+          // Insert the cleaned text at the cursor position
+          textArea.value = currentValue.substring(0, startPos) + cleanedText + currentValue.substring(endPos);
+
+          // Move the cursor to the end of the pasted text
+          const newCursorPos = startPos + cleanedText.length;
+          textArea.setSelectionRange(newCursorPos, newCursorPos);
+
+          // Provide visual feedback
+          textArea.style.borderColor = '#007bff'; // Highlight on paste
+          setTimeout(() => {
+            textArea.style.borderColor = ''; // Reset after 500ms
+          }, 500);
+        });
+      }
+    });
+
+    // Handle QTY field to remove decimal points and ensure whole numbers
+    const qtyInput = document.getElementById('id_quanty');
+    if (qtyInput) {
+      qtyInput.addEventListener('input', (e) => {
+        let value = e.target.value;
+
+        // Remove any non-numeric characters except for the decimal point
+        value = value.replace(/[^0-9.]/g, '');
+
+        // Parse the value as a float and convert to an integer to remove decimals
+        if (value !== '') {
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            value = Math.floor(numValue).toString(); // Remove decimal points (e.g., 1.0 -> 1, 0.0 -> 0)
+          } else {
+            value = ''; // Clear the field if the input is invalid
+          }
+        }
+
+        // Update the input field with the cleaned-up value
+        e.target.value = value;
+      });
+
+      // Ensure the value is an integer on form submission
+      qtyInput.closest('form').addEventListener('submit', (e) => {
+        let value = qtyInput.value;
+        if (value !== '') {
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            qtyInput.value = Math.floor(numValue).toString();
+          } else {
+            qtyInput.value = '';
+          }
+        }
+      });
+    }
+
+    const supplierInput = document.getElementById('id_supplier');
+    let isComposing = false;
+    let lastValue = '';
+
+    supplierInput.addEventListener('compositionstart', () => {
+        isComposing = true;
+    });
+
+    supplierInput.addEventListener('compositionend', (event) => {
+        isComposing = false;
+        // Force update after composition
+        lastValue = event.target.value;
+    });
+
+    supplierInput.addEventListener('input', (event) => {
+        if (isComposing) return; // Skip during composition
+        lastValue = event.target.value;
+    });
+
+    supplierInput.addEventListener('change', (event) => {
+        // After selection, store full value
+        lastValue = event.target.value;
+    });
+
+    supplierInput.addEventListener('blur', (event) => {
+        if (isComposing) return;
+        // On blur, restore full value if corrupted
+        if (event.target.value !== lastValue) {
+            event.target.value = lastValue;
+        }
+    });
+    supplierInput.addEventListener('change', (event) => {
+    lastValue = event.target.value;
+    event.target.blur();
+    setTimeout(() => event.target.focus(), 0); // Brief blur/refocus to reset IME
+    });
+
+
+
+  });
+</script>
+
+
+<!-- Custom CSS -->
+<style>
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+  }
+  .table {
+    table-layout: fixed;
+  }
+  .pdf-img-column {
+    width: 40% !important;
+  }
+
+  /* Custom styling for the "Upload Excel" button */
+  button[name="uploadExcel"] {
+    background-color: #107C41; /* Excel green */
+    border-color: #107C41;
+    color: white; /* Ensure text is white for contrast */
+  }
+
+  button[name="uploadExcel"]:hover {
+    background-color: #1a9c54; /* Lighter green on hover */
+    border-color: #1a9c54;
+    transform: scale(1.05); /* Keep the existing hover effect */
+  }
+
+  /* Custom styling for the "EXCEL" header */
+  .excel-header {
+    background-color: #107C41 !important; /* Excel green, override table-primary */
+    color: white !important; /* White text for contrast */
+    transition: background-color 0.3s; /* Smooth transition for hover */
+  }
+
+  .excel-header:hover {
+    background-color: #1a9c54 !important; /* Lighter green on hover */
+  }
+</style>

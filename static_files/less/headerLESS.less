@@ -1,0 +1,50 @@
+@import "webLib";
+
+.headerNoPadding {
+  padding-left: 0 !important; 
+  padding-right: 0 !important;
+}
+
+.headerPane {
+  height: 2cm;
+  width: 100vw; 
+  background-color: white;
+  padding-top: 1rem; 
+  padding-bottom: 1rem; 
+  box-sizing: border-box;
+  margin: 0 !important;  
+  .headerNoPadding;
+  #webLib.setBackgroundGradient(90deg, #2c3e50, #3498db);
+}
+
+.headerEmbeddedImg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.headerEmbeddedImg img {
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+.headerLogoWrapper {
+  max-width: 5cm; 
+  width: 100%; 
+  margin-left: 0.5rem; 
+  background-color: #f8f9fa; 
+  padding: 0.5rem; 
+  border-radius: 8px;
+  transition: box-shadow 0.3s; 
+}
+.headerLogoWrapper:hover {
+  box-shadow: 0 4px 7px rgba(0, 0, 0, 0.2);
+}
+
+.headerNavFont {
+  font-weight: 500;
+  font-size: 18px;
+  transition: all 0.3s;
+}

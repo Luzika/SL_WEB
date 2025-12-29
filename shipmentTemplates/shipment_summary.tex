@@ -1,0 +1,103 @@
+% Setting up the document class for a clean, professional look
+\documentclass[a4paper,11pt]{article}
+
+% Including necessary packages for formatting and tables
+\usepackage{geometry}
+\geometry{margin=2cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{pdflscape}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{datetime}
+
+% Configuring fonts for clarity
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\rmdefault}
+
+% Customizing section titles for a modern appearance
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+% Defining a command for consistent status formatting
+\newcommand{\status}[1]{
+    \textbf{#1}
+}
+
+% Starting the document
+\begin{document}
+
+% Adding title and date
+\begin{center}
+    \LARGE\bfseries Shipment Tracking Summary \\
+    \vspace{0.5cm}
+    \normalsize Generated on: \today\ at \currenttime
+\end{center}
+
+% Shipment Details Section
+\section{Shipment Details}
+\begin{description}[leftmargin=2cm,style=nextline]
+    \item[Shipment ID] {{ shipment.shipment_id }}
+    \item[Company] {{ shipment.company }}
+    \item[Vessel] {{ shipment.vessel }}
+    \item[Warehouse] {{ shipment.warehouse|default_if_none:"N/A" }}
+    \item[Status] 
+        {% if shipment.flag_status == "START" %}
+            \status{Start}
+        {% elif shipment.flag_status == "STAY" %}
+            \status{Stay}
+        {% elif shipment.flag_status == "COMPLETED" %}
+            \status{Completed}
+        {% else %}
+            \status{Blank}
+        {% endif %}
+    \item[In Date] {{ shipment.in_date|date:"Y-m-d"|default_if_none:"N/A" }}
+    \item[Out Date] {{ shipment.out_date|date:"Y-m-d"|default_if_none:"N/A" }}
+    \item[Created] {{ shipment.insert_date|date:"Y-m-d H:i:s"|default_if_none:"N/A" }}
+\end{description}
+
+% Movement History Section
+\section{Movement History}
+{% if movements %}
+\begin{landscape}
+\begin{longtable}{p{3cm}p{2cm}p{3cm}p{3cm}p{2cm}p{2cm}p{2cm}p{2cm}p{4cm}}
+    \toprule
+    \textbf{Timestamp} & \textbf{Movement Type} & \textbf{Flow Direction} & \textbf{Location} & \textbf{Warehouse} & \textbf{Status} & \textbf{In Date} & \textbf{Out Date} & \textbf{Remark} \\
+    \midrule
+    \endhead
+    {% for movement in movements %}
+    {{ movement.timestamp|date:"Y-m-d H:i:s" }} &
+    {{ movement.movement_type }} &
+    {% if movement.movement_type == "STATUS" %}
+        {% if movement.flag_status == "START" %}
+            Entering Origin
+        {% elif movement.flag_status == "STAY" %}
+            In Transit
+        {% elif movement.flag_status == "COMPLETED" %}
+            Arriving at Destination
+        {% else %}
+            Status Reset
+        {% endif %}
+    {% elif movement.movement_type == "WAREHOUSE" %}
+        Transferred to New Warehouse
+    {% elif movement.movement_type == "DATE" %}
+        Date Updated
+    {% else %}
+        Other Update
+    {% endif %} &
+    {{ movement.location|default_if_none:"N/A" }} &
+    {{ movement.warehouse|default_if_none:"N/A" }} &
+    {{ movement.flag_status|default_if_none:"Blank" }} &
+    {{ movement.in_date|date:"Y-m-d"|default_if_none:"N/A" }} &
+    {{ movement.out_date|date:"Y-m-d"|default_if_none:"N/A" }} &
+    {{ movement.remark|default_if_none:"No remarks" }} \\
+    {% endfor %}
+    \bottomrule
+\end{longtable}
+\end{landscape}
+{% else %}
+No movement history available.
+{% endif %}
+
+% Ending the document
+\end{document}

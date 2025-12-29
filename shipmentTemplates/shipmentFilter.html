@@ -1,0 +1,529 @@
+{% load static %}
+
+<div class="container-fluid py-4 shipmentBox">
+  <!-- Header -->
+  <h1 class="display-5 fw-bold text-primary mb-5 shipmentFormHeader">
+    <i class="bi bi-search me-2"></i>Data Search
+  </h1>
+
+  <!-- Advanced Filter Form -->
+  <form method="GET" class="shadow-lg rounded-3 p-4 bg-white mb-4" id="shipmentFilterForm">
+    <table class="table table-bordered table-hover mb-0"
+           style="width: 100%; border-radius: 0.5rem; overflow: hidden;">
+      <!-- First Row Headers -->
+      <tr class="table-primary">
+        <td class="shipmentTableTh" style="width: 13.5%">IN DATE</td>
+        <td class="shipmentTableTh" style="width: 13.5%">ONBOARD DATE</td>
+        <td class="shipmentTableTh" style="width: 14.5%">COMPANY</td>
+        <td class="shipmentTableTh" style="width: 14.5%">SUPPLIER</td>
+        <td class="shipmentTableTh" style="width: 14.5%">VESSEL</td>
+        <td class="shipmentTableTh" style="width: 14.5%">ORDER. NO</td>
+        <td class="shipmentTableTh" style="width: 14.5%">QUANTY</td>
+      </tr>
+
+      <!-- First Row Inputs -->
+      <tr>
+        <td style="width: 13.5%;">
+          <div class="d-flex flex-column gap-1">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_in_date_range_0" name="in_date_range_0"
+                   placeholder="From (YYYYMMDD)" value="{{ request.GET.in_date_range_min }}">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_in_date_range_1" name="in_date_range_1"
+                   placeholder="To (YYYYMMDD)" value="{{ request.GET.in_date_range_max }}">
+          </div>
+        </td>
+        <td style="width: 13.5%;">
+          <div class="d-flex flex-column gap-1">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_out_date_range_0" name="out_date_range_0"
+                   placeholder="From (YYYYMMDD)" value="{{ request.GET.out_date_range_min }}">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_out_date_range_1" name="out_date_range_1"
+                   placeholder="To (YYYYMMDD)" value="{{ request.GET.out_date_range_max }}">
+          </div>
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text" list="datalistCompaniesFil"
+              id="id_prelistCompaniesF" name="company" placeholder="Select or type">
+           <datalist id="datalistCompaniesFil"></datalist>
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text" list="datalistSuppliersF" placeholder="Select or type" id="id_supplier" name="supplier">
+          <datalist id="datalistSuppliersF"></datalist>
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text" list="datalistVesselsF"
+                 id="id_pickVesselsF" name="vessel" placeholder="Select or type"
+                 value="{{ request.GET.vessel }}">
+          <datalist id="datalistVesselsF"></datalist>
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_Order_NoF" name="Order_No" value="{{ request.GET.Order_No }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_quantyF" name="quanty" value="{{ request.GET.quanty }}">
+        </td>
+      </tr>
+
+      <!-- Second Row Headers -->
+      <tr class="table-primary">
+        <td class="shipmentTableTh" style="width: 13.5%">WEIGHT</td>
+        <td class="shipmentTableTh" style="width: 13.5%">PORT</td>
+        <td class="shipmentTableTh" style="width: 14.5%">EXP. BL</td>
+        <td class="shipmentTableTh" style="width: 14.5%">W/HOUSE</td>
+        <td class="shipmentTableTh" style="width: 14.5%">DIVISION</td>
+        <td class="shipmentTableTh" style="width: 14.5%">STATUS</td>
+        <td class="shipmentTableTh" style="width: 15%">ACTION</td>
+      </tr>
+
+      <!-- Second Row Inputs -->
+      <tr>
+        <td style="width: 13.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_weightF" name="weight" value="{{ request.GET.weight }}">
+        </td>
+        <td style="width: 13.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_portF" name="port" value="{{ request.GET.port }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_job_numberF" name="EXP_BL" value="{{ request.GET.EXP_BL }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 list="datalistWhF"
+                 id="id_pickWh" name="warehouse" placeholder="Select or type"
+                 value="{{ request.GET.warehouse }}">
+          <datalist id="datalistWhF"></datalist>
+        </td>
+        <td style="width: 14.5%;">
+          <select class="form-select shipmentTableTd"
+                  id="id_divisionF" name="division">
+            <option value="" {% if not request.GET.division %}selected{% endif %}>All</option>
+            <option value="B" {% if request.GET.division == 'B' %}selected{% endif %}>B</option>
+            <option value="L" {% if request.GET.division == 'L' %}selected{% endif %}>L</option>
+            <option value="D" {% if request.GET.division == 'D' %}selected{% endif %}>D</option>
+          </select>
+        </td>
+        <td style="width: 14.5%;">
+          <div id="flagStatusContainer" class="d-flex flex-wrap"></div>
+        </td>
+        <td style="width: 15%;">
+          <div class="d-flex flex-row gap-2 justify-content-center">
+            <button class="btn btn-outline-secondary" type="submit" name="filterReset">
+              <i class="bi bi-arrow-counterclockwise me-2"></i>Reset
+            </button>
+            <button class="btn btn-primary" type="submit" name="filterShipment">
+              <i class="bi bi-search me-2"></i>Search
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <!-- Shipment ID Search Block -->
+  <form method="GET" class="shadow-lg rounded-3 p-4 bg-white mb-4 border border-primary" id="shipmentIdSearchForm">
+    <div class="row align-items-center">
+      <div class="col-md-8 col-lg-9">
+        <div class="input-group input-group-lg">
+          <span class="input-group-text bg-white text-primary border-primary">
+            <i class="bi bi-truck"></i>
+          </span>
+          <input class="form-control shipmentTableTd border-primary" type="text"
+                 id="shipment_id" name="shipment_id"
+                 placeholder="Enter Shipment ID"
+                 value="{{ request.GET.shipment_id }}"
+                 list="datalistShipmentIdsF"
+                 aria-label="Shipment ID Search">
+          <datalist id="datalistShipmentIdsF"></datalist>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-3 mt-3 mt-md-0">
+        <button class="btn btn-primary btn-lg w-100 shadow-sm" type="submit" name="filterShipment">
+          <i class="bi bi-search me-2"></i>Search by ID
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/shipmentFilFunctions.js' %}" defer></script>
+
+<script>
+  // Function to load JSON data from a hidden div
+  function loadJsonData(selector) {
+    const element = document.querySelector(selector);
+    if (element && element.dataset.json) {
+      try {
+        return JSON.parse(element.dataset.json);
+      } catch (e) {
+        console.error(`Error parsing JSON from ${selector}:`, e);
+        return {};
+      }
+    }
+    return {};
+  }
+
+  // Function to populate a <select> element
+  function setupSelectCell(selectId, data, defaultValue = null) {
+    const selectElement = document.getElementById(selectId);
+    if (selectElement && Array.isArray(data)) {
+      selectElement.innerHTML = '';
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = defaultValue || 'Select...';
+      selectElement.appendChild(defaultOption);
+
+      data.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item;
+        option.textContent = item;
+        selectElement.appendChild(option);
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramName = selectElement.name;
+      if (urlParams.has(paramName)) {
+        selectElement.value = urlParams.get(paramName);
+      }
+    }
+  }
+
+  // Function to populate a <datalist> for autofill
+  function setupDatalistCell(inputId, dataContainerId) {
+    const inputElement = document.getElementById(inputId);
+    const dataContainer = document.querySelector(dataContainerId);
+    if (inputElement && dataContainer && dataContainer.dataset.json) {
+      const jsonData = JSON.parse(dataContainer.dataset.json);
+      const datalistId = inputElement.getAttribute('list');
+      const datalistElement = document.getElementById(datalistId);
+      if (datalistElement) {
+        datalistElement.innerHTML = '';
+        jsonData.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item;
+          datalistElement.appendChild(option);
+        });
+      }
+    }
+  }
+
+  // NEW FUNCTION: Autofill the company based on the selected vessel
+  function autofillCompanyOnVessel(vesselInputId, companySelectId, vesselMap) {
+    const vesselInput = document.getElementById(vesselInputId);
+    const companySelect = document.getElementById(companySelectId);
+
+    if (vesselInput && companySelect && Object.keys(vesselMap).length > 0) {
+      // Listen for the 'input' event to ensure a selection from the datalist
+      vesselInput.addEventListener('input', (event) => {
+        const selectedVessel = event.target.value;
+        const matchingCompany = vesselMap[selectedVessel];
+
+        if (matchingCompany) {
+          companySelect.value = matchingCompany;
+        }
+      });
+    }
+  }
+
+  // Main event listener for DOM content loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // === Data Loading and Autofill Setup ===
+    const prelistCompaniesFil = loadJsonData('#jsonDataPrelistCompanies');
+    const prelistSuppliersFil = loadJsonData('#jsonDataPrelistSuppliers');
+    const prelistDivisionsFil = loadJsonData('#jsonDataPrelistDivisions');
+    const prelistFlagsFil = loadJsonData('#jsonDataPrelistFlags');
+    const datalistWarehousesFil = loadJsonData('#jsonDatalistWarehouses');
+    const datalistVesselsFil = loadJsonData('#jsonDatalistVessels');
+    const datalistCompaniesFil = loadJsonData('#jsonDataPrelistCompanies');
+
+    autofillToday('id_in_date_range_1');
+    setupSelectCell('id_prelistCompaniesF', prelistCompaniesFil);
+
+    // setupSelectCell('id_divisionF', prelistDivisionsFil);
+    // setupSelectCell('id_flag_statusF', prelistFlagsFil, "", "ALL");
+    setupDatalistCell('datalistWhF', '#jsonDatalistWarehouses');
+    setupDatalistCell('datalistSuppliersF', '#jsonDataPrelistSuppliers');
+    setupDatalistCell('datalistVesselsF', '#jsonDatalistVessels');
+    setupDatalistCell('datalistCompaniesFil','#jsonDataPrelistCompanies');
+    autofillOnVessels('id_pickVesselsF', 'id_prelistCompaniesF');
+
+    try {
+      const flags = Array.isArray(prelistFlagsFil) ? prelistFlagsFil : [];
+      const container = document.getElementById('flagStatusContainer');
+      if (container && flags.length) {
+        container.innerHTML = '';
+        flags.forEach(flag => {
+          const safeVal = String(flag).trim();
+          const safeId = `flag_status_${safeVal.replace(/\s+/g, '_')}`;  // e.g., flag_status_BLANK
+          const label = document.createElement('label');
+          label.className = 'form-check form-check-inline me-2';
+          label.innerHTML = `
+            <input class="form-check-input flag-status-checkbox" type="checkbox" name="flag_status" value="${safeVal}" id="${safeId}">
+            <span class="form-check-label">${safeVal}</span>
+          `;
+          container.appendChild(label);
+        });
+
+        // Restore checked states from URL - more specific selector
+        const params = new URLSearchParams(window.location.search);
+        const selectedFlags = params.getAll('flag_status');
+        selectedFlags.forEach(value => {
+          const checkbox = container.querySelector(`input.flag-status-checkbox[value="${CSS.escape(value)}"]`);
+          if (checkbox) {
+            checkbox.checked = true;
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to populate flag/status checkboxes:', e);
+    }
+
+    // === PREVENT ACCIDENTAL FORM SUBMIT ON ENTER IN FILTER INPUTS ===
+    const filterForm_enter = document.getElementById('shipmentFilterForm');
+
+    if (filterForm_enter) {
+        filterForm_enter.addEventListener('keydown', function(e) {
+            // If user presses Enter in a text input, datalist, or select
+            if (e.key === 'Enter' && 
+                (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+                
+                e.preventDefault();  // Stop form submission
+                console.log('Enter key blocked in filter field — use Search button');
+                
+                // Optional: Give subtle feedback
+                showMessage('Press the Search button to apply filters.', 'info');
+            }
+        });
+
+        // Optional: Also allow Enter on the Search button itself (if it has focus)
+        const searchButton = filterForm_enter.querySelector('button[type="submit"]');
+        if (searchButton) {
+            searchButton.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.stopPropagation();  // Allow normal submit
+                }
+            });
+        }
+    }
+    
+    // === Flatpickr Date Picker Configuration ===
+    const datePickerConfig = {
+      dateFormat: 'Ymd',
+      allowInput: true,
+      onChange: function(selectedDates, dateStr, instance) {
+        instance.element.value = dateStr;
+      },
+      onClose: function(selectedDates, dateStr, instance) {
+        if (dateStr && dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+          const year = dateStr.slice(0, 4);
+          const month = dateStr.slice(4, 6);
+          const day = dateStr.slice(6, 8);
+          const date = new Date(year, month - 1, day);
+          if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day) {
+            alert('Invalid date! Please enter a valid date in YYYYMMDD format.');
+            instance.clear();
+          }
+        } else if (dateStr && dateStr.length !== 8) {
+          alert('Date must be in YYYYMMDD format (8 digits)!');
+          instance.clear();
+        }
+      }
+    };
+
+    flatpickr('#id_in_date_range_0', datePickerConfig);
+    flatpickr('#id_in_date_range_1', datePickerConfig);
+    flatpickr('#id_out_date_range_0', datePickerConfig);
+    flatpickr('#id_out_date_range_1', datePickerConfig);
+
+    // === Form Reset Functionality ===
+    const resetBtn = document.querySelector('button[name="filterReset"]');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = document.getElementById('shipmentFilterForm');
+        if (form) {
+          form.querySelectorAll('input, select').forEach(element => {
+            if (element.type === 'submit' || element.type === 'button') return;
+            if (element.type === 'checkbox') {
+              element.checked = false;
+            } else {
+              element.value = '';
+            }
+          });
+          form.submit();
+        }
+      });
+    }
+    
+    // form initialized
+    // Restore division and status selects from URL params so they persist after search
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const divisionParam = params.get('division');
+      const statusParam = params.get('flag_status');
+      if (divisionParam) {
+        const divisionSelect = document.getElementById('id_divisionF');
+        if (divisionSelect) divisionSelect.value = divisionParam;
+      }
+      if (statusParam) {
+        const statusSelect = document.getElementById('id_flag_statusF');
+        if (statusSelect) statusSelect.value = statusParam;
+      }
+    } catch (e) {
+      console.warn('Unable to restore division/status from URL:', e);
+    }
+    // --- Filter persistence via localStorage ---
+    const STORAGE_KEY = 'shipmentFilterState_v1';
+    const filterForm = document.getElementById('shipmentFilterForm');
+
+    function collectFormState() {
+      const state = {};
+      if (!filterForm) return state;
+      const elements = Array.from(filterForm.elements).filter(el => el.name && el.type !== 'button' && el.type !== 'submit');
+      elements.forEach(el => {
+        const name = el.name;
+        if (el.type === 'checkbox') {
+          if (!state[name]) state[name] = [];
+          if (el.checked) state[name].push(el.value);
+        } else if (el.tagName === 'SELECT') {
+          state[name] = el.value;
+        } else {
+          state[name] = el.value;
+        }
+      });
+      return state;
+    }
+
+    function applyFormState(state) {
+      if (!state || !filterForm) return;
+      Object.keys(state).forEach(name => {
+        const value = state[name];
+        const els = Array.from(filterForm.elements).filter(el => el.name === name);
+        if (!els.length) return;
+        if (els[0].type === 'checkbox') {
+          // clear first
+          els.forEach(el => el.checked = false);
+          if (Array.isArray(value)) {
+            value.forEach(v => {
+              const match = els.find(e => e.value === v);
+              if (match) match.checked = true;
+            });
+          }
+        } else {
+          els[0].value = value;
+        }
+      });
+    }
+
+    function saveFilterState() {
+      try {
+        const s = collectFormState();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      } catch (e) {
+        console.warn('Failed to save filter state:', e);
+      }
+    }
+
+    function restoreFilterStateIfNeeded() {
+      try {
+        const nav = (performance.getEntriesByType && performance.getEntriesByType('navigation') && performance.getEntriesByType('navigation')[0]) || {};
+        const navType = nav.type || (performance.navigation && performance.navigation.type) || 'navigate';
+        // Only restore when not a full page reload
+        if (navType === 'reload') {
+          // On reload, clear stored state to avoid resurrecting old filters
+          localStorage.removeItem(STORAGE_KEY);
+          return;
+        }
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const state = JSON.parse(raw);
+        applyFormState(state);
+      } catch (e) {
+        console.warn('Failed to restore filter state:', e);
+      }
+    }
+
+    function clearFilterState() {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+    }
+
+    // Debounced auto-save on user input/change
+    let saveTimer = null;
+    if (filterForm) {
+      filterForm.addEventListener('input', () => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveFilterState, 350);
+      }, {passive: true});
+      filterForm.addEventListener('change', () => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveFilterState, 350);
+      }, {passive: true});
+
+      // Ensure state is saved immediately on submit (so POST->redirect can restore)
+      filterForm.addEventListener('submit', () => {
+        saveFilterState();
+        // immediate UI feedback not required here
+      });
+    }
+
+    // Clear stored state when Reset is used
+    if (resetBtn) {
+      resetBtn.addEventListener('click', (e) => {
+        clearFilterState();
+      });
+    }
+
+    // Restore saved state if present (and not a reload)
+    restoreFilterStateIfNeeded();
+
+    // submit debug handler removed
+  });
+
+
+</script>
+
+<style>
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+  }
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.25rem;
+    font-family: 'Poppins', sans-serif;
+  }
+  .input-group-text {
+    background-color: #fff;
+    border-radius: 0.375rem 0 0 0.375rem;
+    padding: 0.75rem;
+  }
+  .shipmentTableTd {
+    vertical-align: middle;
+  }
+  .shipmentTableTh {
+    font-weight: bold;
+    vertical-align: middle;
+  }
+  @media (max-width: 767px) {
+    .input-group-lg .form-control {
+      font-size: 1rem;
+    }
+    .btn-lg {
+      font-size: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,21 @@
+.headerPane {
+  height: 2cm;
+  background-color: white;
+}
+
+.headerEmbeddedImg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.headerEmbeddedImg img {
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+.navbarHoverStyle ul li a:hover {
+  background-color: lightblue;
+}

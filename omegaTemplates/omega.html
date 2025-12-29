@@ -1,0 +1,29 @@
+{% extends "mainBody.html" %}
+
+{% block bodyContent %}
+<div class="container no-gutters">
+  <div class="row justify-content-between">
+    <div class="col-lg-6 p-0">
+      <div class="container m-0"
+      style="min-width: 48%; border: 2px solid black;">
+        {% include "omegaRegister.html" %}
+      </div>    
+    </div>
+
+    <div class="col-lg-6 p-0">
+      <div class="container m-0"
+      style="min-width: 48%; border: 2px solid black;">
+        {% include "omegaModify.html" %}
+      </div>    
+    </div>
+    
+  </div>
+</div>
+
+
+<style>
+  td.omegaWarning {
+    color: #f15525;
+  }
+</style>
+{% endblock bodyContent %}

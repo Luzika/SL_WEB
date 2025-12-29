@@ -1,0 +1,124 @@
+{% load static %}
+<!-- Include backend data here (in an invisible <div>) -->
+<div id="jsonDataAccounts" style="display: none;" data-json="{{ Accounts }}"></div>
+  
+{% block bodyContent %}
+<div class="row">
+  <!-- Give a title for the form -->
+  <h1 class="omegaFormHeader">
+    <i class="bi bi-person-circle me-2"></i>USER MODIFICATION
+  </h1>
+</div>
+
+<div class="row">
+  <!-- Make a POST form (no caching) -->
+  <form method="POST" autocomplete="off" id="omegaRegForm">{% csrf_token %}
+    <table class="table table-borderless tableCentered" 
+    style="min-width: 48%;">
+      <col style="max-width: 20%;">
+      <col style="max-width: 25%;">
+      <col style="max-width: 20%;">
+      <col style="max-width: 25%;">
+      
+      <tr>
+        <td class="omegaLabel">Search ID:</td>
+        <td style="min-width: 3.5cm;">
+          <select class="form-select omegaField centered"
+          style="width: 100%;" 
+          id="id_listUserID" name="MODuserID"></select>
+        </td>
+        <td class="omegaLabel" 
+        style="padding-left: 45px";">Email:</td>            
+        <td style="min-width: 3.5cm;">
+          <input class="form-control omegaField centered"
+          style="width: 100%;" name="MODemail" id="id_MODemail">
+        </td>
+      </tr>
+
+      <tr>
+        <td class="omegaLabel">Password:</td>
+        <td style="min-width: 3.5cm;">
+          <input class="form-control omegaField centered"
+          style="width: 100%;" readonly name="MODpwd" id="id_MODpwd">
+        </td>
+        <td class="omegaLabel"
+        style="padding-left: 45px";>New Password:</td>
+        <td style="min-width: 3.5cm;">
+          <input class="form-control omegaField centered"
+          style="width: 100%;" name="MODnewPwd" id="id_MODnewPwd">
+        </td>
+      </tr>
+
+      <tr>
+        <td class="omegaLabel">Company:</td>
+        <td style="min-width: 3.5cm;">
+          <input class="form-control omegaField centered"
+          style="width: 100%;" name="MODcompany" id="id_MODcompany">
+        </td>
+        <td class="omegaLabel" 
+        style="padding-left: 45px";">Supplier:</td>            
+        <td style="min-width: 3.5cm;">
+          <input class="form-control omegaField centered"
+          style="width: 100%;" name="MODsupplier" id="id_MODsupplier">
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="omegaLabel">Role Flag:</td>      
+        <td>
+          <div class="d-flex flex-column justify-content-between">
+            <select class="form-select omegaField centered"
+            style="width: 100%; margin: 3px 0;"
+            id="id_MODisOpr" name="MODisOpr"></select>
+            <select class="form-select omegaField centered"
+            style="width: 100%; margin: 3px 0;"
+            id="id_MODisSpl" name="MODisSpl"></select>
+            <select class="form-select omegaField centered"
+            style="width: 100%; margin: 3px 0;"
+            id="id_MODisCpn" name="MODisCpn"></select>                          
+          </div>
+        </td>
+        <td class="omegaLabel"
+        style="padding-left: 45px">Permission Level:</td>
+        <td>
+          <select class="form-select omegaField centered"
+          style="width: 100%;" 
+          id="id_MODpermission" name="MODpermission"></select>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="omegaLabel">Vessel List:</td>          
+        <td colspan="3">
+          <textarea class="form-control omegaField"
+          style="width: 100%; height: 4cm;"
+          name="MODvesselList" id="id_MODvesselList"></textarea>
+        </td>
+      </tr>
+      
+      <tr>
+        <td colspan="4">
+        <div style="display: flex; justify-content: space-between;">
+          <button class="btn omegaModButton" type="submit" 
+          style="width: 40%;" name="modifyUser">Modify</button>
+          <button class="btn omegaDelButton" type="submit" 
+          style="width: 40%;" name="deleteUser">Delete</button>
+        </div>
+        </td>
+      </tr>
+      {% for error in omegaModificationForm.non_field.errors %}
+      <tr>
+        <td colspan="4" class="omegaWarningFont">{{error}}</td>          
+      </tr>
+      {% endfor %}
+      
+    </table>
+
+  </form>
+</div>
+{% endblock bodyContent %}
+
+
+
+<!-- Import JS Scripts -->
+<script src="{% static 'js/omegaModFunctions.js' %}" defer></script>

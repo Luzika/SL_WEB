@@ -1,0 +1,126 @@
+{% load static %}
+
+<div class="container-fluid py-4 shipmentBox">
+
+  <h1 class="display-5 fw-bold text-primary mb-5 shipmentFormHeader">
+    <i class="bi bi-pencil-square me-2"></i>Update Shipments
+  </h1>
+
+  <form method="POST" class="shadow-lg rounded-3 p-4 bg-white"
+  style="max-width: 100%; margin: 0 auto; margin-bottom: 1rem;">{% csrf_token %}
+    <table id="shipmentModForm" class="table table-bordered table-hover mb-0"
+    style="width: 100%; border-radius: 0.5rem; overflow: hidden;">
+      <tbody>
+        <tr class="table-primary" style="text-align: center;">
+          <th>DATE IN</th>
+          <th>EXP BL</th> 
+          <th>ONBOARD DATE</th>
+          <th>PORT</th>
+          <th>STATUS</th>
+          <th>REMARK</th>
+          <th>W/H</th>
+          </tr>
+        <tr>
+          <td><input class="form-control" type="text" id="id_in_dateM" name="in_dateM" placeholder="YYYYMMDD" value="{{ shipment.in_date|date:'Ymd'|default_if_none:'' }}"></td>
+
+          <td><input class="form-control" type="text" id="id_EXP_BLM" name="EXP_BLM" value="{{ shipment.EXP_BL|default_if_none:'' }}"></td>
+
+          <td><input class="form-control" type="text" id="id_out_dateM" name="out_dateM" placeholder="YYYYMMDD" value="{{ shipment.out_date|date:'Ymd'|default_if_none:'' }}"></td>
+          
+          <td><input class="form-control" type="text" id="id_portM" name="portM" value="{{ shipment.port|default_if_none:'' }}"></td>
+          
+          <td><select class="form-select" id="id_flag_statusM" name="flag_statusM">
+            {% for status in status_choices %}
+              <option value="{{ status.0 }}" {% if shipment.flag_status == status.0 %}selected{% endif %}>{{ status.1 }}</option>
+            {% endfor %}
+          </select></td>
+          
+          <td><input class="form-control" type="text" id="id_remarkM" name="remarkM" value="{{ shipment.remark|default_if_none:'' }}"></td>
+          
+          <td><input class="form-control" type="text" list="datalistWhM" id="id_pickWhM" name="warehouseM" placeholder="Select or type" value="{{ shipment.warehouse|default_if_none:'' }}"></td>
+        </tr>
+
+        <tr style="display: none;">
+          <td style="display: none;">
+            <input type="hidden" name="MODshipmentID" value="{{ shipment.number|default_if_none:'' }}" id="id_MODshipmentID">
+          </td>
+           <td style="display: none;"><input type="hidden" value="{{ shipmentPage.number|default:'1' }}" name="page" id="id_page"></td>
+          <td style="display: none;"><input type="hidden" value="nothing" name="statusS" id="id_statusS"></td>
+          <td style="display: none;"><input type="hidden" value="" name="page1Sticked" id="id_page1Sticked"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-flex flex-row justify-content-end mt-4">
+      <button class="btn btn-primary btn-lg me-3" type="submit" name="modifyShipment">
+        <i class="bi bi-check-circle me-2"></i>Update
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const datePickerConfig = {
+    dateFormat: 'Ymd',
+    allowInput: true,
+    onChange: function(selectedDates, dateStr, instance) {
+      instance.element.value = dateStr;
+    },
+    onClose: function(selectedDates, dateStr, instance) {
+      if (dateStr && dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+        const year = dateStr.slice(0, 4);
+        const month = dateStr.slice(4, 6);
+        const day = dateStr.slice(6, 8);
+        const date = new Date(year, month - 1, day);
+        if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day) {
+          alert('Invalid date! Please enter a valid date in YYYYMMDD format.');
+          instance.clear();
+        }
+      } else if (dateStr && dateStr.length !== 8) {
+        alert('Date must be in YYYYMMDD format (8 digits)!');
+        instance.clear();
+      }
+    }
+  };
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  
+  flatpickr('#id_in_dateM', datePickerConfig);
+  flatpickr('#id_out_dateM', datePickerConfig);
+  console.log('Flatpickr initialized for shipmentModForm');
+});
+</script>
+
+
+<style>
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+  }
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.25rem;
+    font-family: 'Poppins', sans-serif;
+  }
+</style>

@@ -1,0 +1,78 @@
+@import "webLib";
+
+@staffColor: #e67e22;
+@customerColor: #8e44ad;
+@buttonWelcomeColor: #0d6efd;
+@loginWarningColor: #cd2525;
+
+
+.loginWarningFont {
+  .centered;
+  #webLib.setWarningFont(@loginWarningColor, 0.9*@userFontSize);
+}
+.loginBigHeader {
+  .baseHeader(2.5);
+  .centered;
+  margin-top: 2cm;
+  margin-bottom: 0;
+}
+.loginLabel {
+  #webLib.setFont(@userFont, black);
+  #webLib.setFontStyle(bold, 1.1*@userFontSize);
+}
+.loginField {
+  font-family: "Times New Roman", sans-serif;
+  font-size: 1.1*@userFontSize;
+}
+
+.loginButton {
+  .baseButton;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  #webLib.setFontStyle(bold, 1.1*@userFontSize);
+  #webLib.setBackgroundGradient(90deg, @userColor, @userTransitionColor);
+}
+.loginButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px rgba(63,126,233,0.4);
+  #webLib.setBackgroundGradient(90deg, @userTransitionColor, @userColor);
+}
+
+.loginWelcomeBox {
+  background: white;
+  max-width: 600px;
+  width: 100%;
+  padding: 40px;
+  border: 2px solid #3498db;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+  margin-top: -90%;
+  animation: fadeIn 1s ease-in;
+  .centered;
+  #webLib.setAnimationFunc(fadeIn, ease-in, 1s);
+  .baseFadeIn(fadeIn, -20px, 0);
+}
+
+.staffWelcome {
+  #webLib.setFont(@userFont, @staffColor);
+  #webLib.setFontStyle(700, 1.5*@userFontSize);
+}
+.customerWelcome {
+  #webLib.setFont(@userFont, @customerColor);
+  #webLib.setFontStyle(700, 1.5*@userFontSize);
+}
+.buttonWelcome {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 2px solid @buttonWelcomeColor;
+  color: @buttonWelcomeColor;
+  text-decoration: none;
+  transition: all 0.3s;
+  display: inline-block;
+  margin-top: 10px;
+  #webLib.setFontStyle(600, 1.5*@userFontSize);
+}
+.buttonWelcome:hover {
+  background-color: @buttonWelcomeColor;
+  color: white;
+}

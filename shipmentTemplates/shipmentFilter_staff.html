@@ -1,0 +1,157 @@
+{% load static %}
+
+<div class="container-fluid py-4 shipmentBox">
+  <!-- Header -->
+  <h1 class="display-5 fw-bold text-primary mb-5 shipmentFormHeader">
+    <i class="bi bi-search me-2"></i>Data Search
+  </h1>
+
+  <!-- Advanced Filter Form -->
+  <form method="GET" class="shadow-lg rounded-3 p-4 bg-white mb-4" id="shipmentFilterForm">
+    <table class="table table-bordered table-hover mb-0"
+           style="width: 100%; border-radius: 0.5rem; overflow: hidden;">
+      <!-- First Row Headers -->
+      <tr class="table-primary">
+        <td class="shipmentTableTh" style="width: 13.5%">IN DATE</td>
+        <td class="shipmentTableTh" style="width: 13.5%">ONBOARD DATE</td>
+        <td class="shipmentTableTh" style="width: 14.5%">COMPANY</td>
+        <td class="shipmentTableTh" style="width: 14.5%">SUPPLIER</td>
+        <td class="shipmentTableTh" style="width: 14.5%">VESSEL</td>
+        <td class="shipmentTableTh" style="width: 14.5%">ORDER. NO</td>
+        <td class="shipmentTableTh" style="width: 14.5%">QUANTY</td>
+      </tr>
+
+      <!-- First Row Inputs -->
+      <tr>
+        <td style="width: 13.5%;">
+          <div class="d-flex flex-column gap-1">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_in_date_range_0" name="in_date_range_min"
+                   placeholder="From (YYYYMMDD)" value="{{ request.GET.in_date_range_min }}">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_in_date_range_1" name="in_date_range_max"
+                   placeholder="To (YYYYMMDD)" value="{{ request.GET.in_date_range_max }}">
+          </div>
+        </td>
+        <td style="width: 13.5%;">
+          <div class="d-flex flex-column gap-1">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_out_date_range_0" name="out_date_range_min"
+                   placeholder="From (YYYYMMDD)" value="{{ request.GET.out_date_range_min }}">
+            <input class="form-control shipmentTableTd" type="text"
+                   id="id_out_date_range_1" name="out_date_range_max"
+                   placeholder="To (YYYYMMDD)" value="{{ request.GET.out_date_range_max }}">
+          </div>
+        </td>
+        <td style="width: 14.5%;">
+          <select class="form-select shipmentTableTd"
+                  id="id_prelistCompanies" name="company" value="{{ request.GET.company }}">
+          </select>
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_supplierF" name="supplier" value="{{ request.GET.supplier }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text" list="datalistVessels"
+                 id="id_pickVessels" name="vessel" placeholder="Select or type"
+                 value="{{ request.GET.vessel }}">
+          <datalist id="datalistVessels"></datalist>
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_Order_NoF" name="Order_No" value="{{ request.GET.Order_No }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_quantyF" name="quanty" value="{{ request.GET.quanty }}">
+        </td>
+      </tr>
+
+      <!-- Second Row Headers -->
+      <tr class="table-primary">
+        <td class="shipmentTableTh" style="width: 13.5%">WEIGHT</td>
+        <td class="shipmentTableTh" style="width: 13.5%">PORT</td>
+        <td class="shipmentTableTh" style="width: 14.5%">EXP. BL</td>
+        <td class="shipmentTableTh" style="width: 14.5%">W/HOUSE</td>
+        <td class="shipmentTableTh" style="width: 14.5%">DIVISION</td>
+        <td class="shipmentTableTh" style="width: 14.5%">STATUS</td>
+        <td class="shipmentTableTh" style="width: 15%">ACTION</td>
+      </tr>
+
+      <!-- Second Row Inputs -->
+      <tr>
+        <td style="width: 13.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_weightF" name="weight" value="{{ request.GET.weight }}">
+        </td>
+        <td style="width: 13.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_portF" name="port" value="{{ request.GET.port }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 id="id_EXP_BL" name="EXP_BL" value="{{ request.GET.EXP_BL }}">
+        </td>
+        <td style="width: 14.5%;">
+          <input class="form-control shipmentTableTd" type="text"
+                 list="datalistWhF"
+                 id="id_pickWh" name="warehouse" placeholder="Select or type"
+                 value="{{ request.GET.warehouse }}">
+          <datalist id="datalistWhF"></datalist>
+        </td>
+        <td style="width: 14.5%;">
+          <select class="form-select shipmentTableTd"
+                  id="id_divisionF" name="division">
+            <option value="" {% if not request.GET.division %}selected{% endif %}>All</option>
+            <option value="B" {% if request.GET.division == 'B' %}selected{% endif %}>B</option>
+            <option value="L" {% if request.GET.division == 'L' %}selected{% endif %}>L</option>
+            <option value="D" {% if request.GET.division == 'D' %}selected{% endif %}>D</option>
+          </select>
+        </td>
+        <td style="width: 14.5%;">
+          <div id="status-checkbox-container" class="p-2 border rounded bg-light" style="max-height: 100px; overflow-y: auto;">
+            </div>
+        </td>
+        <td style="width: 15%;">
+          <div class="d-flex flex-row gap-2 justify-content-center">
+            <button class="btn btn-outline-secondary" type="submit" name="filterReset">
+              <i class="bi bi-arrow-counterclockwise me-2"></i>Reset
+            </button>
+            <button class="btn btn-primary" type="submit" name="filterShipment">
+              <i class="bi bi-search me-2"></i>Search
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <!-- Shipment ID Search Block -->
+  <form method="GET" class="shadow-lg rounded-3 p-4 bg-white mb-4 border border-primary" id="shipmentIdSearchForm">
+    <div class="row align-items-center">
+      <div class="col-md-8 col-lg-9">
+        <div class="input-group input-group-lg">
+          <span class="input-group-text bg-white text-primary border-primary">
+            <i class="bi bi-truck"></i>
+          </span>
+          <input class="form-control shipmentTableTd border-primary" type="text"
+                 id="shipment_id" name="shipment_id"
+                 placeholder="Enter Shipment ID"
+                 value="{{ request.GET.shipment_id }}"
+                 list="datalistShipmentIdsF"
+                 aria-label="Shipment ID Search">
+          <datalist id="datalistShipmentIdsF"></datalist>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-3 mt-3 mt-md-0">
+        <button class="btn btn-primary btn-lg w-100 shadow-sm" type="submit" name="filterShipment">
+          <i class="bi bi-search me-2"></i>Search by ID
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/scripts_shipmentFilter_staff.js' %}" defer></script>
+<link rel="stylesheet" href="{% static 'css/styles_shipmentFilter_staff.css' %}">

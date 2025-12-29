@@ -1,0 +1,42 @@
+@import "webLib";
+
+.omegaFormHeader {
+  .baseHeader(1.2);
+  .centered;
+  margin-top: 2cm;
+  margin-bottom: 10px;  
+  #webLib.setAnimationFunc(fadeIn, ease-in, 1s);
+  .baseFadeIn(fadeIn, 20px, 0);
+}
+.omegaLabel {
+  #webLib.setFont(@userFont, black);
+  #webLib.setFontStyle(bold, 0.85*@userFontSize);
+}
+.omegaField {
+  font-family: "Times New Roman", sans-serif;
+  font-size: 0.85*@userFontSize;
+}
+.omegaWarning {
+  .centered;
+  #webLib.setWarningFont(@warningColor, 0.75*@userFontSize);  
+}
+.omegaRowTitle {
+  .omegaLabel;
+  background-color: lightblue;
+}
+
+.omegaRegButton {
+  .baseButton;
+  background-color: @proceedColor;
+  #webLib.setFontStyle(bold, 1.1*@userFontSize);
+}
+.omegaModButton {
+  .baseButton;
+  background-color: @modifyColor;
+  #webLib.setFontStyle(bold, 1.1*@userFontSize);
+}
+.omegaDelButton {
+  .baseButton;
+  background-color: @deleteColor;
+  #webLib.setFontStyle(bold, 1.1*@userFontSize);
+}

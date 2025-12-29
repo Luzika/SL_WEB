@@ -1,0 +1,129 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/footerFormat.css' %}">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Footer Section -->
+<footer class="container-fluid footerPane d-flex flex-column align-items-center shadow-sm"
+        style="background: linear-gradient(90deg, #2c3e50, #3498db); padding: 2rem 0;">
+    
+    <!-- Combined Content Container (Centralized) -->
+    <div class="footer-inner-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 1200px; padding: 1rem;">
+        
+        <!-- Company & Contact Info (Middle and Above Address) -->
+        <div class="company-contact-info text-white text-center" style="margin-bottom: 20px;">
+            <div class="company-info" style="margin-bottom: 20px;">
+                <p style="margin: 10px 0; font-size: 1.5rem; font-weight: bold;">
+                    <i class="fas fa-building" style="margin-right: 10px;"></i>SL SEA AND AIR CO.,LTD
+                </p>
+                <p style="margin: 5px 0; font-size: 1rem;">
+                    <strong><i class="fas fa-user-tie" style="margin-right: 5px;"></i>CEO:</strong> SONG KYOUNG HEE
+                </p>
+            </div>
+            <div class="contact-info">
+                <p style="margin: 10px 0; font-size: 1rem;">
+                    <strong><i class="fas fa-phone" style="margin-right: 5px;"></i>TEL:</strong> +82-51-463-4747 | 
+                    <strong><i class="fas fa-fax" style="margin-right: 5px;"></i>FAX:</strong> +82-51-463-4884
+                </p>
+                <p style="margin: 20px 0 10px; font-size: 0.9rem;">
+                    <i class="fas fa-copyright" style="margin-right: 5px;"></i>Copyrightⓒ by <strong>slsa.co.kr</strong> All rights reserved.
+                </p>
+                <p style="margin: 5px 0; font-size: 0.9rem;">
+                    <i class="fas fa-user-cog" style="margin-right: 5px;"></i>Webmaster
+                </p>
+                <!-- Social Media Links -->
+                <div class="footer-social-links" style="margin-top: 20px;">
+                    <a href="#" style="color: #fff; margin: 0 10px; text-decoration: none;">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" style="color: #fff; margin: 0 10px; text-decoration: none;">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" style="color: #fff; margin: 0 10px; text-decoration: none;">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Addresses and Maps (Two Columns in One Row) -->
+        <div class="address-map-container" style="display: flex; flex-wrap: wrap; justify-content: center; width: 100%;">
+            
+            <!-- Choryang Office -->
+            <div class="address-map-wrapper" style="flex: 1; min-width: 300px; margin: 10px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                <p style="margin: 10px 0; font-size: 1.2rem; font-weight: bold; color: #3498db; text-shadow: 1px 1px 2px #000;">
+                    <i class="fas fa-building" style="margin-right: 10px;"></i>Choryang Office
+                </p>
+                <p style="margin: 5px 0; font-size: 0.9rem; color: #fff;">
+                    290 Jungang-daero, Dong-gu, Busan, Korea Zip code: 48730
+                </p>
+                <div class="map-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3261.275525547614!2d129.0435905152149!3d35.1186718803233!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35689403d5236683%3A0xc6a87c10b64f3d2!2s290%20Jungang-daero%2C%20Dong-gu%2C%20Busan%2C%20South%20Korea!5e0!3m2!1sen!2sus!4v1628173426868!5m2!1sen!2sus" 
+                        width="100%" 
+                        height="300" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+
+            <!-- Warehouse -->
+            <div class="address-map-wrapper" style="flex: 1; min-width: 300px; margin: 10px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                <p style="margin: 10px 0; font-size: 1.2rem; font-weight: bold; color: #3498db; text-shadow: 1px 1px 2px #000;">
+                    <i class="fas fa-warehouse" style="margin-right: 10px;"></i>Warehouse
+                </p>
+                <p style="margin: 5px 0; font-size: 0.9rem; color: #fff;">
+                    74, Noksansandan 381-ro 12beongil, Gangseo-gu, Busan, Korea Zip code: 46755
+                </p>
+                <div class="map-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3264.4447470659976!2d128.8471373152119!3d35.03960058034458!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3568c07c2a74c43d%3A0x7d283c07e050731!2s74%2C%20Noksansandan%20381-ro%2012beon-gil%2C%20Gangseo-gu%2C%20Busan%2C%20South%20Korea!5e0!3m2!1sen!2sus!4v1628173499111!5m2!1sen!2sus" 
+                        width="100%" 
+                        height="300" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Custom CSS for Footer -->
+<style>
+    .footerPane {
+        min-height: 150px;
+    }
+
+    .footer-social-links i {
+        font-size: 1.5rem;
+        transition: color 0.3s;
+    }
+
+    .footer-social-links a:hover i {
+        color: #3498db;
+    }
+
+    /* Media query for mobile responsiveness */
+    @media (max-width: 768px) {
+        .footer-inner-content {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .address-map-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .address-map-wrapper {
+            width: 100%;
+            margin: 10px 0;
+        }
+    }
+</style>

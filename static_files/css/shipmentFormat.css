@@ -1,0 +1,24 @@
+.coloredDivB {
+  color: red;
+}
+.coloredDivL {
+  color: blue;
+}
+.coloredTotal {
+  color: darkgreen;
+}
+
+.rowTitleSm {
+  font-weight: bold;
+  font-size: 10px;
+  background-color: #FCBA12;
+}
+.rowInfoSm {
+  font-size: 10px;
+}
+.rowInfoMd {
+  font-size: 14px;
+}
+.rowHovered tbody tr:hover {
+  background-color: palevioletred;
+}

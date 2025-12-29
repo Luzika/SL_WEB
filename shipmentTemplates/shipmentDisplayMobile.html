@@ -1,0 +1,312 @@
+<!-- Load the file from the templatetags folder that define custom template tag -->
+{% load url_tags %}
+{% load static %}
+
+<!-- Full-width container with gradient background -->
+<div class="container-fluid px-0 m-0 shadow-sm"
+style="background: linear-gradient(135deg, #2c3e50, #3498db); padding-top: 2rem; padding-bottom: 2rem; width: 100vw; margin-left: 0; margin-right: 0;">
+  <h1 class="text-white text-center fw-bold mb-4 shipmentFormHeader">
+    INFORMATION
+  </h1>
+
+  <div class="row g-0 mb-4" style="margin: 0;">
+    <img class="img-fluid" alt="Shipment Banner"
+    style="max-width: 90%; height: auto; border-radius: 0.5rem; display: block; margin: 0 auto;"
+    src="{% static 'images/info-mobile.png' %}">
+  </div>
+
+  <form method="GET" class="mx-auto bg-white shadow-lg rounded-3 p-4"
+  style="max-width: 90%; width: 100%;">
+  <table id="shipmentTableM" class="table mb-0" style="width: 100%;">
+    <thead>
+    <tr>
+      <th colspan="2" class="coloredTotal text-end pe-3 py-2"
+      style="font-family: 'Poppins', sans-serif; font-size: 1.25rem; font-weight: 500;">
+        TOTAL: {{ totalResults }}
+      </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for shipment in shipmentPage %}
+    <!-- Shipment Block with Alternating Background -->
+    <tr>
+      <td colspan="2">
+        <div class="shipment-block mb-3 p-3 rounded border 
+        {% cycle 'bg-soft-peach' 'bg-soft-lavender' %}"
+        style="background-color: inherit;">
+          <table class="table table-borderless mb-0" style="width: 100%;">
+            <tbody>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">STATUS</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                  {{ shipment.flag_status }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">VESSEL</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.vessel }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">DOC</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.docs }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">PO.NO</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.POno|linebreaksbr }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">SUPPLIER</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.supplier }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">QTY</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.quanty }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">SIZE</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.size|linebreaksbr }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">WEIGHT</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.weight }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">IN DATE</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.in_date|date:"Y-m-d" }}</td>
+            </tr>
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">REMARK</td>
+              <td class="input-col" style="color: {{ shipment.colordiv }};">
+                {{ shipment.remark|linebreaksbr }}</td>
+            </tr>
+
+            <tr class="row-with-border">
+              <td class="label-col fw-bold text-primary pe-1" style="vertical-align: middle;">IMAGE</td>
+              <td class="input-col">
+                {% if shipment.image %}
+                  <a href="{{ shipment.image.url }}" target="_blank">
+                    <img src="{{ shipment.image.url }}" class="shipment-img" alt="Shipment Image">
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Paginator with Dropdown -->
+  <div class="text-end mt-3 pe-3" 
+  style="font-family: 'Poppins', sans-serif; font-size: 1rem;">
+    <label for="pageSelect" class="me-2" 
+    style="font-family: 'Poppins', sans-serif; font-size: 1rem;">
+      Page:
+    </label>
+    <select id="pageSelect" class="form-select form-select-sm custom-select d-inline-block" 
+    style="width: auto; font-family: 'Poppins', sans-serif; font-size: 1rem;">
+      {% for num in shipmentPage.paginator.page_range %}
+        <option value="{{ num }}" 
+        {% if num == shipmentPage.number %}selected{% endif %}>
+          {{ num }} of {{ shipmentPage.paginator.num_pages }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  </form>
+</div>
+
+
+<!-- Custom CSS -->
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  .table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  .table td, .table th {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    padding: 0.75rem 0.25rem;
+    vertical-align: middle;
+  }
+  .label-col {
+    width: 15%;
+    min-width: 80px;
+  }
+  .input-col {
+    width: 85%;
+  }
+  .coloredTotal {
+    background-color: #e9ecef;
+    color: #2c3e50;
+  }
+  .coloredDivB {
+    background-color: #cce5ff; /* Light blue for division B */
+    color: #004085;
+  }
+  .coloredDivL {
+    background-color: #d4edda; /* Light green for division L */
+    color: #155724;
+  }
+  .status-img {
+    width: 50%;
+    max-width: 100px;
+    height: auto;
+    transition: transform 0.3s;
+  }
+  .status-img:hover {
+    transform: scale(1.1);
+  }
+  .shipment-img {
+    width: 50%;
+    max-width: 150px;
+    height: 2cm;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    transition: transform 0.3s;
+  }
+  .shipment-img:hover {
+    transform: scale(1.05);
+  }
+  .shipment-block {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+  }
+  .shipment-block:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  .bg-soft-peach {
+    background-color: #ffe8e0; /* Slightly darker peach for contrast */
+  }
+  .bg-soft-lavender {
+    background-color: #e8e0ff; /* Slightly darker lavender for contrast */
+  }
+  .row-with-border {
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .row-with-border:last-child {
+    border-bottom: none;
+  }
+  /* Custom dropdown styling */
+  .custom-select {
+    appearance: none; /* Remove default browser arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    border-color: #3498db;
+    color: #3498db;
+    padding-right: 2rem; /* Space for custom arrow */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+  }
+  .custom-select:focus {
+    border-color: #2c3e50;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    color: #2c3e50;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.75rem;
+    }
+    .container-fluid {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    .shadow-lg {
+      padding: 1rem;
+    }
+    .table td, .table th {
+      padding: 0.5rem 0.25rem;
+    }
+    .status-img, .shipment-img {
+      width: 40%;
+      max-width: 80px;
+    }
+    .shipment-block {
+      padding: 1rem;
+    }
+    .form-select-sm {
+      font-size: 0.875rem;
+      padding: 0.25rem 2rem 0.25rem 0.5rem; /* Adjust padding for smaller screens */
+      background-position: right 0.5rem center;
+    }
+  }
+  @media (max-width: 440px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+    .table td, .table th {
+      padding: 0.3rem 0.25rem;
+    }
+    .label-col {
+      width: 15%;
+      min-width: 60px;
+      font-size: 0.9rem;
+    }
+    .input-col {
+      width: 35%;
+      font-size: 0.9rem;
+    }
+    .status-img, .shipment-img {
+      width: 30%;
+      max-width: 60px;
+    }
+    .coloredTotal {
+      font-size: 1rem;
+      text-align: center;
+    }
+    .shipment-block {
+      padding: 0.75rem;
+    }
+    .form-select-sm {
+      font-size: 0.75rem;
+      padding: 0.2rem 2rem 0.2rem 0.4rem; /* Adjust padding for very small screens */
+      background-position: right 0.4rem center;
+      background-size: 0.8rem;
+    }
+    .text-end {
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+<!-- JavaScript for Paginator -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Paginator Dropdown Navigation
+    const pageSelect = document.getElementById('pageSelect');
+    if (pageSelect) {
+      pageSelect.addEventListener('change', (e) => {
+        const selectedPage = e.target.value;
+        // Get the current URL and its query parameters
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+        // Update the 'page' parameter with the selected value
+        params.set('page', selectedPage);
+        // Update the URL with the new query string
+        url.search = params.toString();
+        // Redirect to the new URL
+        window.location.href = url.toString();
+      });
+    }
+  });
+</script>

@@ -1,0 +1,116 @@
+{% load static %}
+
+<div class="shadow-lg rounded-3 p-4 bg-white" style="margin-bottom: 1rem;">
+  <!-- Header aligned with the form table -->
+  <h1 class="display-5 fw-bold text-primary mb-2 adminFormHeader">
+    <i class="bi bi-building me-2"></i>COMPANY UPDATE FORM
+  </h1>
+
+  <!-- Form with shadow and rounded corners -->
+  <form method="POST" autocomplete="off" class="p-0">{% csrf_token %}
+    <table id="companyForm" class="table table-bordered table-hover mb-0" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+      <thead>
+      <tr class="table-primary">
+        <th class="adminTableTh" style="width: 20%;">ID</th>
+        <th class="adminTableTh" style="width: 20%;">COMPANY</th>          
+        <th class="adminTableTh" style="width: 20%;">EMAIL</th>
+        <th class="adminTableTh" style="width: 20%;">PASSWORD</th>
+        <th class="adminTableTh" style="width: 20%;">ACTION</th>
+      </tr>
+      </thead>
+      
+      <tbody>
+      <tr>
+        <td class="adminTableTd">
+          <input class="form-control form-control-sm" type="text" id="id_companyID" name="companyID" placeholder="Set a new ID/target ID">
+        </td>
+        <td class="adminTableTd">
+          <input class="form-control form-control-sm" type="text" id="id_companyName" name="companyName" placeholder="Set company name">
+        </td>
+        <td class="adminTableTd">
+          <input class="form-control form-control-sm" type="text" id="id_companyEmail" name="companyEmail" placeholder="Set email">
+        </td>
+        <td class="adminTableTd">
+          <input class="form-control form-control-sm" type="text" id="id_companyPwd" name="companyPwd" placeholder="Set password">
+        </td>
+        <td class="adminTableTd">
+          <div class="d-flex flex-row justify-content-around">
+            <button class="btn btn-primary btn-sm" type="submit" style="height: 1cm;" id="id_saveCpn" name="saveCompany" onclick="saveCompany()">Save/Update</button>
+            <button class="btn btn-danger btn-sm" type="submit" style="height: 1cm;" id="id_deleteCpn" name="deleteCompany" onclick="deleteCompany()">Delete</button>  
+          </div>
+        </td>
+      </tr>
+
+      {% if companyForm.companyPwd.errors %}
+      <tr>
+        <td colspan="5" class="adminWarningFont">
+          {{ companyForm.companyPwd.errors|striptags }}
+        </td>
+      </tr>
+      {% endif %}
+      {% if companyForm.companyName.errors %}
+      <tr>
+        <td colspan="5" class="adminWarningFont">
+          {{ companyForm.companyName.errors|striptags }}
+        </td>
+      </tr>
+      {% endif %}
+      {% if companyForm.companyEmail.errors %}
+      <tr>
+        <td colspan="5" class="adminWarningFont">
+          {{ companyForm.companyEmail.errors|striptags }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        {% for error in companyForm.non_field_errors %}
+          <td colspan="5" class="adminWarningFont">{{ error }}</td>
+        {% endfor %}                    
+      </tr>
+
+      <tr>
+        <td class="adminTableTh" style="width: 20%; background-color: #cfe2ff;">VESSELS</td>
+        <td colspan="4" class="adminTableTd">
+          <textarea class="form-control form-control-sm" id="id_companyVessels" name="companyVessels" rows="3"></textarea>
+        </td>
+      </tr>
+      {% if companyForm.companyVessels.errors %}
+      <tr>
+        <td colspan="5" class="adminWarningFont">
+          {{ companyForm.companyVessels.errors|striptags }}
+        </td>
+      </tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </form>
+</div>
+
+<!-- Import JS Scripts -->
+<script src="{% static 'js/companyFunctions.js' %}" defer></script>
+
+<style>
+  .adminTableTh, .adminTableTd {
+    vertical-align: middle;
+    text-align: center;
+  }
+  .adminWarningFont {
+    color: #cd2525;
+    font-size: 0.9rem;
+  }
+  .form-control, .form-select, .form-control-sm {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+  }
+  .form-control:focus, .form-select:focus, .form-control-sm:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+  }
+  .table-hover tbody tr:hover {
+    background-color: #d1ecf1;
+  }
+</style>

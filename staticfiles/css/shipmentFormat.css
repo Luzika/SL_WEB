@@ -1,0 +1,33 @@
+.coloredDivB {
+  color: red;
+}
+.coloredDivL {
+  color: blue;
+}
+.coloredTotal {
+  color: darkgreen;
+}
+
+.statusIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.statusIcon img {
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+.rowTitleSm {
+  font-weight: bold;
+  font-size: 10px;
+  background-color: #FCBA12;
+}
+.rowInfoSm {
+  font-size: 10px;
+}
+.rowHovered tbody tr:hover {
+  background-color: palevioletred;
+}

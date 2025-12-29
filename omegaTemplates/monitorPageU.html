@@ -1,0 +1,30 @@
+{% load url_tags %}
+
+<!-- Pagination controls -->
+{% with aPage=accountsPage %}
+
+  {% if aPage.has_other_pages %}
+  <div class="pagination">
+    {% if aPage.has_previous %}
+      <a style="margin-right: 3px;" id="id_firstPageU"
+      href="{% param_replacing page=1 listUticked='' %}">&laquo; First</a>
+      <a style="margin-right: 3px;" id="id_prevPageU"
+      href="{% param_replacing page=aPage.previous_page_number listUticked='' %}"
+      >Previous</a>
+    {% endif %}
+    
+    <span style="margin-right: 3px;">
+      Page {{ aPage.number }} of {{ aPage.paginator.num_pages }}
+    </span>
+    
+    {% if aPage.has_next %}
+      <a style="margin-right: 3px;" id="id_nextPageU"
+      href="{% param_replacing page=aPage.next_page_number listUticked='' %}" 
+      >Next</a>
+      <a style="margin-right: 3px;" id="id_lastPageU"
+      href="{% param_replacing page=aPage.paginator.num_pages listUticked='' %}">Last &raquo;</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+{% endwith %}

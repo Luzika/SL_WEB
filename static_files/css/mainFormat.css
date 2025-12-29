@@ -1,0 +1,88 @@
+
+.headerPart {
+  background-color: white;
+  height: 2cm;
+}
+.mainBody {
+  margin-top: 3cm;
+  min-height: 100vh;
+  height: 100%;
+}
+ulHeader {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rowTitle {
+  font-weight: bold;
+  font-size: 16px;
+  background-color: #FCBA12;
+}
+.columnTitle {
+  font-weight: bold;
+  font-size: 16px;
+  text-align: left;
+}
+
+.centeredForm {
+  text-align: center;
+}
+.rowHoverStyle tbody tr:hover {
+  background-color: darkgray;
+}
+.centeredWidth {
+  margin-left: auto;
+  margin-right: auto;
+}
+table tr td {
+  width: 100%;
+}
+
+.bordered {
+  border: 1px black;
+}
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+.centered0 {
+  display: block;
+  text-align: center;
+}
+
+
+.buttonSubmit {
+  background-color: cadetblue;
+}
+.buttonChange {
+  background-color: purple;
+}
+.buttonClear {
+  background-color: gray;
+}
+.buttonDelete {
+  background-color: red;
+}
+
+.textWarning {
+  font-weight: bolder;
+  font-size: 18px;
+  color: red;
+  text-align: center;
+}
+
+h1 {
+  font-weight: bold;
+  text-align: center;
+  font-size: 35px;
+  height: 30px;
+  color: #342809;
+}
+h2 {
+  align-content: center;
+  font-weight: bold;
+  text-align: center;
+  font-size: 20px;
+  height: 50px;
+}

@@ -1,0 +1,41 @@
+@import "webLib";
+
+
+.shipmentBox {
+  #webLib.setBackgroundGradient(135deg, #f8f9fa, #e9ecef);
+  #webLib.setAnimationFunc(fadeIn, ease-in, 1s);
+  .baseFadeIn(fadeIn, -20px, 0);
+}
+
+.shipmentFormHeader {
+  .baseHeader(2.5);
+  text-align: left;
+  margin-left: 1%;
+  margin-top: 0.5cm;
+  margin-bottom: 0;
+  #webLib.setAnimationFunc(fadeIn, ease-in, 1s);
+  .baseFadeIn(fadeIn, 20px, 0);
+}
+
+.shipmentTableTh {
+  .centered;
+  vertical-align: middle;
+  font-family: @userFont;
+  #webLib.setFontStyle(700, 0.75rem);
+}
+.shipmentTableTd {
+  .centered;
+  vertical-align: middle;
+  font-family: @userFont;
+  #webLib.setFontStyle(400, 0.75rem);
+  padding: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.shipmentWarningFont {
+  .centered;
+  font-family: @userFont;
+  #webLib.setFontStyle(500, 0.75*@userFontSize);
+  #webLib.setWarningFont(@warningColor, 0.75*@userFontSize);
+}

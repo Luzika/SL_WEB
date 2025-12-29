@@ -1,0 +1,132 @@
+{% load static %}
+{% load url_tags %}
+
+{% block bodyContent %}
+<div class="row">
+  <!-- Give a title for the form -->
+  <h1 class="omegaFormHeader">
+    <i class="bi bi-person-circle me-2"></i>USER MONITORING
+  </h1>
+</div>
+
+<div class="row">
+  <!-- Make a POST form (no caching) -->
+  <!-- <iframe name="monitorU" style="display: none;"></iframe> -->
+  <form method="POST" id="omegaTableU" target="monitorU">{% csrf_token %}
+  <!-- <form method="GET" action="" id="omegaTableU" target="monitorU"> -->
+  <table class="table table-borderless tableCentered" 
+  style="width: 90vw;">
+    <col style="width: 2%;">
+    <col style="width: 8%;">
+    <col style="width: 8%;">
+    <col style="width: 6%;">
+    <col style="width: 6%;">
+    <col style="width: 6%;">
+    <col style="width: 8%;">
+    <col style="width: 10%;">
+    <col style="width: 10%;">
+    <col style="width: 10%;">
+    <col style="width: 26%;">
+
+    <tr class="centered">
+      <td class="omegaRowTitle">
+        <!-- <input type="hidden" value="{{ listUticked|join:',' }}" 
+        name="listUticked" id="id_listUticked">  -->
+        <input type="hidden" value="{{ pageUticked|join:',' }}"
+        name="pageUticked" id="id_pageUticked">
+      </td>
+      <td style="display: none;">
+        <input type="hidden" value="{{ page0Uticked|join:',' }}"  
+        name="page0Uticked" id="id_page0Uticked"> 
+      </td>
+      <td style="display: none;">
+        <input type="hidden" value="{{ accountsPage.number }}"  
+        name="page" id="id_page"> 
+      </td>
+      <td style="display: none;">
+        <input type="hidden" value="nothing"  
+        name="status" id="id_status"> 
+      </td>
+      <td style="display: none;">
+        <input type="hidden" value="{{ listUtickedTotal|join:',' }}"  
+        name="listUtickedTotal" id="id_listUtickedTotal"> 
+      </td>
+      <td class="omegaRowTitle">User ID</td>
+      <td class="omegaRowTitle">Password</td>
+      <td class="omegaRowTitle">Opr?</td>
+      <td class="omegaRowTitle">Spl?</td>
+      <td class="omegaRowTitle">Cpn?</td>
+      <td class="omegaRowTitle">Joined In</td>
+      <td class="omegaRowTitle">Company</td>
+      <td class="omegaRowTitle">Supplier</td>
+      <td class="omegaRowTitle">Email</td>
+      <td class="omegaRowTitle">Vessels</td>
+    </tr>
+    {% for account in accountsPage %}
+    <tr class="centered">
+      <td><input type="checkbox" 
+        id="id_Utick" name="Utick" value="{{account.userID}}"
+        {% if account.userID in allTickedIDs %}checked{% endif %}>
+      </td>
+      <td class="omegaField">{{account.userID}}</td>
+      <td class="omegaField">{{account.rawPassword}}</td>
+      <td class="omegaField">{{account.isOpr}}</td>
+      <td class="omegaField">{{account.isSpl}}</td>
+      <td class="omegaField">{{account.isCpn}}</td>
+      <td class="omegaField">{{account.dateSignUp|date:"Y-m-d"}}</td>
+      <td class="omegaField">{{account.companyName}}</td>
+      <td class="omegaField">{{account.supplierName}}</td>
+      <td class="omegaField">{{account.email}}</td>
+      <td class="omegaField">{{account.vesselList}}</td>
+    </tr>
+    {% endfor %}    
+
+    <tr>
+      <td colspan="11">
+      <div class="d-flex flex-row justify-content-between">
+        <div>
+          {% include "monitorPageU.html" %}
+        </div>
+
+        <div>
+          <button class="btn omegaModButton" type="submit" 
+          style="width: 5cm; margin-left: 1cm;" 
+          name="exportExcelUser">Export To Excel</button>
+          <button class="btn omegaDelButton" type="submit" 
+          style="width: 4cm; margin-left: 1cm;" 
+          name="multiDeleteUser">Delete Users</button>          
+        </div>
+      </div>
+      </td>
+    </tr>
+
+  </table>
+  </form>
+</div>
+
+
+<style>
+  .omegaModButton, .omegaDelButton {
+    font-size: 0.85rem;
+  }
+  /* .omegaFormHeader {
+    animation: none;
+  } */
+</style>
+{% endblock bodyContent %}
+
+
+
+<!-- Import JS Scripts -->
+<script src="{% static 'js/functions.js' %}" defer></script>
+<script src="{% static 'js/omegaMonUFunctions.js' %}" defer></script>
+
+
+<script>
+  const buttonExcelUser = document.getElementsByName("exportExcelUser");
+  buttonExcelUser[0].addEventListener("click", function(){
+    setTimeout(() => {
+      window.location.href = "/OMeGaDMin/Udownloaded/"; 
+    }, 600);
+  })
+</script>

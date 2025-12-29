@@ -1,0 +1,43 @@
+@import "webLib";
+
+
+.adminBox {
+  #webLib.setBackgroundGradient(135deg, #f8f9fa, #e9ecef);
+  #webLib.setAnimationFunc(fadeIn, ease-in, 1s);
+  .baseFadeIn(fadeIn, -20px, 0);
+}
+
+.adminFormHeader {
+  .baseHeader(2.5);
+  text-align: left;
+  margin-left: 0;
+  margin-top: 0.5cm;
+  margin-bottom: 0;
+  #webLib.setAnimationFunc(fadeIn, ease-in, 1s);
+  .baseFadeIn(fadeIn, 20px, 0);
+}
+
+.adminTableTh {
+  .centered;
+  vertical-align: middle;
+  font-family: @userFont;
+  #webLib.setFontStyle(700, 0.75rem);
+}
+.adminTableTd {
+  .centered;
+  vertical-align: middle;
+  font-family: @userFont;
+  #webLib.setFontStyle(400, 0.75rem);
+  padding: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.adminWarningFont {
+  .centered;
+  font-family: @userFont;
+  #webLib.setFontStyle(500, 0.9*@userFontSize);
+  #webLib.setWarningFont(@warningColor, 0.9*@userFontSize);
+  background-color: #f8d7da;
+  border-radius: 0.25rem;
+}

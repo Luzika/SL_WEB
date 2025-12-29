@@ -1,0 +1,100 @@
+{% load static %}
+<!-- Include backend data here (in an invisible <div>) -->
+<div id="jsonDataCompanies" style="display: none;" data-json="{{ Companies }}"></div>
+
+<div class="shadow-lg rounded-3 p-4 bg-white" style="margin-bottom: 1rem;">
+  <!-- Header inside the wrapper -->
+  <h1 class="display-5 fw-bold text-primary mb-2 adminFormHeader">
+    <i class="bi bi-building me-2"></i>SHIPPING COMPANY LIST
+  </h1>
+
+  <!-- Table with shadow and rounded corners -->
+  <div class="table-responsive" style="position: relative;">
+    <table id="companyList" class="table table-bordered table-hover mb-0" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+      <thead>
+      <tr class="table-primary">
+        <th class="adminTableTh" style="width: 10%;">ID</th>
+        <th class="adminTableTh" style="width: 10%;">COMPANY</th>
+        <th class="adminTableTh" style="width: 10%;">EMAIL</th>
+        <th class="adminTableTh" style="width: 10%;">PASSWORD</th>
+        <th class="adminTableTh" style="width: 60%;">VESSEL LIST</th>
+      </tr>
+      </thead>
+      
+      <tbody id="companyListBody">
+        <!-- Dynamically populated by companyFunctions.js -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .adminTableTh, .adminTableTd {
+    vertical-align: middle;
+    text-align: center;
+  }
+  .adminWarningFont {
+    color: #cd2525;
+    font-size: 0.9rem;
+  }
+  #companyList tbody tr:nth-child(odd) td {
+    background-color: #f8f9fa !important;
+  }
+  #companyList tbody tr:nth-child(even) td {
+    background-color: #e9ecef !important;
+  }
+  #companyList.table-hover tbody tr:hover td {
+    background-color: #d1ecf1 !important;
+  }
+  #companyList th, #companyList td {
+    border-right: 1px solid #dee2e6;
+    position: relative;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const table = document.getElementById("companyList");
+    const headers = table.querySelectorAll("th");
+
+    headers.forEach((header, index) => {
+      header.addEventListener("click", () => {
+        const isAscending = header.classList.contains("sort-asc");
+        sortTableByColumn(table, index, !isAscending);
+      });
+    });
+  });
+
+  function sortTableByColumn(table, columnIndex, asc = true) {
+  const dirModifier = asc ? 1 : -1;
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+
+  // Sort the rows
+  const sortedRows = rows.sort((a, b) => {
+      const aColText = a.cells[columnIndex].textContent.trim();
+      const bColText = b.cells[columnIndex].textContent.trim();
+
+      // Check if the content is a number (for QTY, etc.)
+      const aNum = parseFloat(aColText);
+      const bNum = parseFloat(bColText);
+
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+          return (aNum - bNum) * dirModifier;
+      } else {
+          return aColText.localeCompare(bColText) * dirModifier;
+      }
+  });
+
+  // Remove existing rows and add sorted rows
+  while (tbody.firstChild) {
+      tbody.removeChild(tbody.firstChild);
+  }
+  tbody.append(...sortedRows);
+
+  // Update the sorting indicator on the header
+  table.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc', 'sort-desc'));
+  table.querySelector(`th:nth-child(${columnIndex + 1})`).classList.toggle('sort-asc', asc);
+  table.querySelector(`th:nth-child(${columnIndex + 1})`).classList.toggle('sort-desc', !asc);
+  } 
+</script>

@@ -1,0 +1,74 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/footerFormat.css' %}">
+
+<!-- Footer Section -->
+<footer class="container-fluid footerPane d-flex flex-column align-items-center shadow-sm"
+        style="background: linear-gradient(90deg, #2c3e50, #3498db); padding: 2rem 0;">
+  
+  <!-- Footer Content -->
+  <div class="footer-content text-white text-center" style="max-width: 800px; font-size: 1rem; padding: 1rem;">
+    <p style="margin: 10px 0; font-size: 1.1rem;">
+      <strong>Company:</strong> SL SEA AND AIR CO.,LTD | 
+      <strong>CEO:</strong> SONG KYOUNG HEE | 
+      <strong>Location:</strong> 24, HAEYANG-RO 57BEON-GIL, YEONGDO-GU, BUSAN, KOREA
+    </p>
+    <p style="margin: 10px 0;">
+      <strong>TEL:</strong> +82-51-463-4747 | 
+      <strong>FAX:</strong> +82-51-463-4884
+    </p>
+    <p style="margin: 10px 0;">
+      Copyrightⓒ by <strong>slsa.co.kr</strong> All rights reserved.
+    </p>
+    <p style="margin: 10px 0;">
+      Webmaster
+    </p>
+  </div>
+  
+  <!-- Optional Social Media Links (you can add if needed) -->
+  <div class="footer-social-links">
+    <a href="#" style="color: #fff; margin: 0 10px; text-decoration: none;">
+      <i class="fab fa-facebook-f"></i> <!-- Example icon -->
+    </a>
+    <a href="#" style="color: #fff; margin: 0 10px; text-decoration: none;">
+      <i class="fab fa-twitter"></i> <!-- Example icon -->
+    </a>
+    <a href="#" style="color: #fff; margin: 0 10px; text-decoration: none;">
+      <i class="fab fa-linkedin-in"></i> <!-- Example icon -->
+    </a>
+  </div>
+</footer>
+
+<!-- Custom CSS for Footer -->
+<style>
+  .footerPane {
+    min-height: 150px;
+  }
+
+  .footer-social-links i {
+    font-size: 1.5rem;
+    transition: color 0.3s;
+  }
+
+  .footer-social-links a:hover i {
+    color: #3498db;
+  }
+
+  .footer-content p {
+    font-size: 1rem;
+    margin: 10px 0;
+  }
+
+  .footer-content strong {
+    font-weight: bold;
+  }
+
+  .footer-content a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-content a:hover {
+    color: #3498db;
+  }
+</style>

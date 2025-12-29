@@ -1,0 +1,87 @@
+{% load static %}
+<!-- Include backend data here (in an invisible <div>) -->
+<div id="jsonDataPermissions" style="display: none;" data-json="{{ Permissions }}"></div>
+
+<div class="shadow-lg rounded-3 p-4 bg-white" style="margin-bottom: 1rem;">
+  <!-- Header aligned with the form table -->
+  <h1 class="display-5 fw-bold text-primary mb-2 adminFormHeader">
+    <i class="bi bi-person-gear me-2"></i>OPERATOR UPDATE FORM
+  </h1>
+
+  <!-- Form with shadow and rounded corners -->
+  <form method="POST" autocomplete="off" class="p-0">{% csrf_token %}
+    <table id="operatorForm" class="table table-bordered table-hover mb-0" style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+      <thead>
+      <tr class="table-primary">
+        <th class="adminTableTh" style="width: 25%;">ID</th>
+        <th class="adminTableTh" style="width: 25%;">PASSWORD</th>
+        <th class="adminTableTh" style="width: 25%;">PERMISSION</th>
+        <th class="adminTableTh" style="width: 25%;">ACTION</th>
+      </tr>
+      </thead>
+      
+      <tbody>
+      <tr>
+        <td class="adminTableTd">
+          <input class="form-control form-control-sm" type="text" id="id_operatorID" name="operatorID" placeholder="Set a new ID/target ID">
+        </td>
+        <td class="adminTableTd">
+          <input class="form-control form-control-sm" type="text" id="id_operatorPwd" name="operatorPwd" placeholder="Set password">
+        </td>
+        <td class="adminTableTd">
+          <select class="form-select form-select-sm" id="id_operatorPerm" name="operatorPerm"></select>
+        </td>
+        <td class="adminTableTd">
+          <div class="d-flex flex-row justify-content-around">
+            <button class="btn btn-primary btn-sm" type="submit" style="height: 1cm;" id="id_saveOpr" name="saveOperator" onclick="saveOperator()">Save/Update</button>
+            <button class="btn btn-danger btn-sm" type="submit" style="height: 1cm;" id="id_deleteOpr" name="deleteOperator" onclick="deleteOperator()">Delete</button>  
+          </div>
+        </td>
+      </tr>
+
+      {% if operatorForm.operatorPwd.errors %}
+      <tr>
+        <td colspan="4" class="adminWarningFont">
+          {{ operatorForm.operatorPwd.errors|striptags }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        {% for error in operatorForm.non_field_errors %}
+          <td colspan="4" class="adminWarningFont">{{ error }}</td>
+        {% endfor %}                    
+      </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+
+<!-- Import JS Scripts -->
+<script src="{% static 'js/operatorFunctions.js' %}" defer></script>
+
+<!-- Inline styles for consistency -->
+<style>
+  .adminTableTh, .adminTableTd {
+    vertical-align: middle;
+    text-align: center;
+  }
+  .adminWarningFont {
+    color: #cd2525;
+    font-size: 0.9rem;
+  }
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+  }
+  .table-hover tbody tr:hover {
+    background-color: #d1ecf1;
+  }
+</style>

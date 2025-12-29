@@ -1,0 +1,31 @@
+{% extends "mainBody.html" %}
+
+{% block bodyContent %}
+<div class="full-width-container">
+  <div>{% include "oprForm.html" %}</div>
+  <div>{% include "oprList.html" %}</div>
+  <div>{% include "splForm.html" %}</div>
+  <div>{% include "splList.html" %}</div>
+  <div>{% include "spListMod.html" %}</div>
+  <div>{% include "cpnForm.html" %}</div>
+  <div>{% include "cpnList.html" %}</div>
+</div>
+
+<style>
+  .full-width-container {
+    width: 80%;
+    margin: 0 10%; /* 10% margins on left and right */
+    padding: 10px; /* Vertical padding */
+  }
+  td.adminWarningFont {
+    color: #cd2525;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .full-width-container {
+      margin: 0 5%; /* 5% margins on mobile */
+      padding: 5px;
+    }
+  }
+</style>
+{% endblock bodyContent %}

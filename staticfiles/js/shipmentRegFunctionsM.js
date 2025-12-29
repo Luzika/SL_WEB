@@ -1,0 +1,11 @@
+const shipmentRegFormM = document.getElementById('shipmentRegFormM');
+const prelistCompaniesRegM = loadJsonData('#jsonDataPrelistCompanies');
+const prelistSuppliersRegM = loadJsonData('#jsonDataPrelistSuppliers');
+const prelistCPackingRegM = loadJsonData('#jsonDataPrelistCPacking');
+const datalistVesselsRegM = loadJsonData('#jsonDatalistVessels');
+autofillToday('id_in_dateM');
+setupSelectCell('id_prelistCompaniesM', prelistCompaniesRegM);
+setupSelectCell('id_c_packingM', prelistCPackingRegM);
+setupDatalistCell('datalistSuppliersM', '#jsonDataPrelistSuppliers');
+setupDatalistCell('datalistVesselsM', '#jsonDatalistVessels');
+autofillOnVessels('id_pickVesselsM', 'id_prelistCompaniesM');

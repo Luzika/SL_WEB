@@ -1,0 +1,117 @@
+.centered {
+  text-align: center;
+}
+.tableCentered {
+  margin-left: auto;
+  margin-right: auto;
+}
+table td {
+  vertical-align: middle;
+}
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.baseButton {
+  border: None;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+.loginWarningFont {
+  text-align: center;
+  padding: 0.5rem;
+  color: #cd2525;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+.loginBigHeader {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3f88e9;
+  text-align: center;
+  margin-top: 2cm;
+  margin-bottom: 0;
+}
+.loginLabel {
+  font-family: 'Poppins', sans-serif;
+  color: #000000;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.loginField {
+  font-family: "Times New Roman", sans-serif;
+  font-size: 1.1rem;
+}
+.loginButton {
+  border: None;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-weight: bold;
+  font-size: 1.1rem;
+  background: linear-gradient(90deg, #3f88e9, #4dabf7);
+}
+.loginButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px rgba(63, 126, 233, 0.4);
+  background: linear-gradient(90deg, #4dabf7, #3f88e9);
+}
+.loginWelcomeBox {
+  background: white;
+  max-width: 600px;
+  width: 100%;
+  padding: 40px;
+  border: 2px solid #3498db;
+  border-radius: 1.5rem;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  margin-top: -90%;
+  animation: fadeIn 1s ease-in;
+  text-align: center;
+  animation-name: fadeIn;
+  animation-timing-function: ease-in;
+  animation-duration: 1s;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) translateX(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+.staffWelcome {
+  font-family: 'Poppins', sans-serif;
+  color: #e67e22;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+.customerWelcome {
+  font-family: 'Poppins', sans-serif;
+  color: #8e44ad;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+.buttonWelcome {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 2px solid #0d6efd;
+  color: #0d6efd;
+  text-decoration: none;
+  transition: all 0.3s;
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+.buttonWelcome:hover {
+  background-color: #0d6efd;
+  color: white;
+}

@@ -1,0 +1,616 @@
+/* Define custom properties for reusability */
+:root {
+    --border-color: #dee2e6;
+    --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    --scrollbar-thumb: #888;
+    --scrollbar-track: #f1f1f1;
+    --primary-blue: #007bff;
+    --gray-bg: #f8f9fa;
+    --table-header-bg: #cfe2ff;
+    --table-row-odd: #f2f2f2;
+    --table-row-even: #ffffff;
+    --total-row-bg: #e9ecef;
+    --message-box-bg: #28a745;
+}
+
+/* Base styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--gray-bg);
+    margin: 0;
+}
+
+/* Main container */
+.main-container {
+    padding: 0.5rem;
+}
+
+/* Table container with custom scrollbar */
+.table-container {
+    position: relative;
+    overflow: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;.form-control,
+.form-select {
+    border-radius: 0.375rem;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+.table {
+    table-layout: fixed;
+}
+
+.pdf-img-column {
+    /* Remove the fixed 40% width to allow the table to calculate a better,
+       more compact width based on the content (the small icons). */
+    /* If you still want a minimum width, you can use: */
+    min-width: 80px;
+}
+
+/* Custom styling for the "Upload Excel" button */
+button[name="uploadExcel"] {
+    background-color: #107C41; /* Excel green */
+    border-color: #107C41;
+    color: white; /* Ensure text is white for contrast */
+}
+
+button[name="uploadExcel"]:hover {
+    background-color: #1a9c54; /* Lighter green on hover */
+    border-color: #1a9c54;
+    transform: scale(1.05); /* Keep the existing hover effect */
+}
+
+/* Custom styling for the "EXCEL" header */
+.excel-header {
+    background-color: #107C41 !important; /* Excel green, override table-primary */
+    color: white !important; /* White text for contrast */
+    transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+.excel-header:hover {
+    background-color: #1a9c54 !important; /* Lighter green on hover */
+}
+    box-shadow: var(--shadow);
+    background-color: var(--table-row-even);
+    padding: 0;
+    cursor: grab;
+    user-select: none;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-width: thin;
+    max-height: 80vh; /* Adjust this value to your liking */
+    overflow-y: auto;
+}
+
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+.table-container:active {
+    cursor: grabbing;
+}
+
+/* Main table */
+.main-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    min-width: max-content;
+}
+
+.main-table td {
+    font-size: 0.75rem; /* Smaller font for cell content */
+}
+
+/* Update the header font size (th) to match or be slightly larger */
+.main-table th {
+    font-size: 0.8rem;
+}
+
+.main-table th,
+.main-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.4rem 0.6rem; /* Reduced padding */
+    text-align: left;
+    vertical-align: middle;
+}
+
+.main-table th {
+    font-weight: bold;
+    background-color: var(--table-header-bg);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Resizable columns */
+.resizable {
+    position: relative;
+    padding-right: 1rem; /* Reduced to avoid overlap with arrows */
+}
+
+.resizable::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 3;
+}
+
+.resizable:hover::after {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.table-hover tbody tr:hover {
+    --bs-table-hover-bg: #e0f2fe;
+    background-color: #e0f2fe;
+}
+
+/* Sortable headers */
+.sortable-header {
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.sortable-header .header-title {
+    display: inline-block;
+    vertical-align: middle;
+    
+}
+
+.sortable-header .sort-arrows {
+    display: inline-flex;
+    flex-direction: column;
+    margin-left: 5px; /* Minimal separation from the text */
+    vertical-align: middle;
+    line-height: 0.7; /* Tightly pack the arrows */
+    font-size: 0.7em; /* Make the arrows themselves small */
+}
+
+.sortable-header .sort-arrow-up,
+.sortable-header .sort-arrow-down {
+    font-family: 'bootstrap-icons';
+    font-size: 0.55rem;
+    color: #6c757d;
+    transition: color 0.2s ease;
+    line-height: 1;
+}
+
+.sortable-header .sort-arrow-up::before {
+    content: '▲';
+}
+
+.sortable-header .sort-arrow-down::before {
+    content: '▼';
+}
+
+.sortable-header.asc .sort-arrow-up {
+    color: var(--primary-blue);
+}
+
+.sortable-header.desc .sort-arrow-down {
+    color: var(--primary-blue);
+}
+
+.sortable-header:hover {
+    background-color: #f1f3f5;
+}
+
+.sortable-header:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+/* Total row */
+.total-row {
+    font-weight: bold;
+    background-color: var(--total-row-bg);
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    font-size: 0.85rem; /* Added for consistency */
+}
+
+/* Modal styles */
+.modal-content {
+    border-radius: 0.5rem;
+}
+
+.modal-image,
+.modal-pdf {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: auto;
+}
+
+.modal-pdf {
+    width: 100%;
+    height: 100vh;
+}
+
+/* Custom message box */
+.message-box {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--message-box-bg);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.25rem;
+    box-shadow: var(--shadow);
+    z-index: 1050;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Header and button styling */
+.shipmentFormHeader {
+    padding-left: 1.5rem;
+}
+
+.control-panel {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem;
+    background-color: var(--gray-bg);
+    border: 1px solid #c0c0c0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.total-rows,
+.total-count {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.total-rows span,
+.total-count span {
+    font-size: 1.3rem; /* Slightly smaller */
+    font-weight: 700;
+    color: #343a40;
+}
+
+/* Base class for consistent button styles */
+.action-button {
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.action-button:active {
+    transform: translateY(1px);
+}
+
+/* Specific styles for each button */
+#exportBtn {
+    background-color: #28a745;
+    color: #fff;
+}
+
+#exportBtn:hover {
+    background-color: #218838;
+}
+
+#resetSortBtn {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+#resetSortBtn:hover {
+    background-color: #5a6268;
+}
+
+#selectAllDataBtn {
+    background-color: #007bff;
+    color: #fff;
+}
+
+#selectAllDataBtn:hover {
+    background-color: #0056b3;
+}
+
+#selectAllDataBtn[data-action="remove"] {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+#selectAllDataBtn[data-action="remove"]:hover {
+    background-color: #c82333;
+}
+
+/* Styling for the icons within the buttons */
+.action-button i {
+    margin-right: 8px;
+}
+
+.status-image { max-width: 20px; }
+.linked-image { max-width: 50px; }
+
+#totalTicked {
+    color: var(--primary-blue);
+}
+
+#shipmentTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f8f9fa;
+}
+
+#backToTopBtn {
+    display: none;
+    position: sticky;
+    bottom: 10px;
+    left: 10px;
+    z-index: 99;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    border: none;
+    outline: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    transition: background-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#backToTopBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Base style for the Full Screen button */
+#fullScreenBtn {
+    background-color: #6f42c1; /* A distinct purple color */
+    color: #fff;
+}
+
+#fullScreenBtn:hover {
+    background-color: #5f37a5; /* Darker purple on hover */
+}
+
+/* Style for the button when it shows the "exit" icon */
+#fullScreenBtn.exit-full-screen {
+    background-color: #dc3545; /* Red color for a "close" action */
+}
+
+#fullScreenBtn.exit-full-screen:hover {
+    background-color: #c82333;
+}
+
+/* Optional: To ensure consistent icon spacing */
+.d-flex .btn i {
+    margin-right: 8px;
+}
+
+/* Styles for full-screen mode */
+body.full-screen {
+    overflow: hidden;
+}
+
+.main-container.full-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    z-index: 100;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+}
+
+.table-container.full-screen {
+    max-height: none;
+    height: auto;
+    overflow-y: visible;
+}
+
+.sortable-header {
+    position: relative; /* Make sure the header is positioned for the dropdown */
+}
+
+.filter-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    padding: 0;
+}
+
+.filter-btn:hover {
+    color: #000;
+}
+
+/* Change cursor to pointer for clickable cells */
+.clickable-cell {
+  cursor: pointer;
+}
+
+/* Container for PDF icons */
+/* Style for the individual PDF links */
+.pdf-link {
+    position: relative; /* This is also a key change */
+    color: #dc3545;
+    transition: transform 0.2s ease-in-out;
+}
+
+.pdf-link:hover {
+    color: #c82333;
+    transform: scale(1.1);
+}
+/* Style for the number on the PDF icon */
+.pdf-number {
+    font-size: 0.75em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #dc3545;
+    border-radius: 50%;
+    padding: 2px 5px;
+    position: absolute; /* The number is positioned absolutely... */
+    bottom: 8px; /* ...5 pixels above the icon's top edge */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+/* General style for the PDF icon itself */
+.pdf-icon {
+    font-size: 1.8rem; /* Your desired size */
+    position: relative; /* This is the key change */
+}
+
+/* Container for image icons */
+.image-icon-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Style for the individual image links */
+.image-link {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.2s ease-in-out;
+}
+
+.image-link:hover {
+    transform: scale(1.1);
+}
+
+/* Style for the number on the image */
+.image-number {
+    font-size: 0.65em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff; /* A nice blue color */
+    border-radius: 50%;
+    padding: 1px 4px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+/* Optional: To make the images a bit smaller */
+.linked-image {
+    width: 30px; /* Reduced from 40px */
+    height: 30px; /* Reduced from 40px */
+    object-fit: cover;
+    border: 1px solid #ddd;
+    border-radius: 4px
+}
+
+#deleteShipment {
+    /* Override the background color to a red shade */
+    background-color: #dc3545;
+    color: #fff; /* Ensure text is white for contrast */
+}
+
+#deleteShipment:hover {
+    /* Darken the background on hover */
+    background-color: #c82333;
+    /* This overrides the default action-button hover effect */
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.sortable-header {
+    cursor: pointer; /* Make it obvious it's clickable */
+    position: relative;
+}
+
+.sortable-header:hover {
+    background-color: #b8d4ff; /* Light hover effect */
+}
+
+.sortable-header.sorted {
+    font-weight: bold; /* Bold the active sorted header */
+}
+
+.sortable-header.sorted::after {
+    content: ''; /* Add asc/desc arrow via JS or data attr if needed */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #000; /* Default asc arrow; toggle in JS if needed */
+}
+
+#exportPdfBtn {
+    background-color: #198754; /* Bootstrap Success Green */
+    color: #fff;
+    border: none;
+    transition: all 0.2s;
+}
+
+#exportPdfBtn:hover {
+    background-color: #157347;
+}
+
+#exportPdfBtn:active {
+    background-color: #146c43;
+}
+
+/* Add this class via JS when the PDF is generating */
+#exportPdfBtn.is-loading {
+    background-color: #ffc107; /* Warning Yellow */
+    color: #000;
+    cursor: wait;
+}
+
+.summary-bar {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    gap: 20px;
+}

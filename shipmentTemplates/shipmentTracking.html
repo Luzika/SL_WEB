@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Tracking - {{ shipment.shipment_id }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            transition: background-color 0.3s;
+        }
+        body.dark-mode {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #e9ecef;
+        }
+        .container-fluid {
+            padding: 2rem;
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .sticky-header {
+            background: rgba(30, 60, 114, 0.9);
+            color: #e9ecef;
+        }
+        .shipment-details, .update-form, .evaluation-display {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease-in;
+        }
+        .dark-mode .shipment-details, .dark-mode .update-form, .dark-mode .evaluation-display {
+            background: rgba(40, 40, 40, 0.7);
+        }
+        .movement-table th {
+            cursor: pointer;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+        .movement-table th:hover {
+            background-color: #e9ecef;
+        }
+        .dark-mode .movement-table th:hover {
+            background-color: #495057;
+        }
+        .sort-icon {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+        .sort-icon.active {
+            opacity: 1;
+        }
+        .movement-table tbody tr:nth-child(odd) {
+            background-color: rgba(248, 249, 250, 0.8);
+        }
+        .dark-mode .movement-table tbody tr:nth-child(odd) {
+            background-color: rgba(73, 80, 87, 0.8);
+        }
+        .movement-table tbody tr:hover {
+            background-color: #d1ecf1;
+        }
+        .dark-mode .movement-table tbody tr:hover {
+            background-color: #6c757d;
+        }
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .status-badge, .flow-badge, .transport-badge {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+        }
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+            margin-bottom: 2rem;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+            animation-delay: calc(0.1s * var(--index));
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, #28a745, #007bff);
+            animation: drawLine 1s ease-in-out forwards;
+        }
+        .timeline-item:last-child::before {
+            height: calc(100% - 30px);
+        }
+        .timeline-icon {
+            position: absolute;
+            left: 12px;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #fff;
+            background: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+        .timeline-icon.completed {
+            background: #6c757d;
+        }
+        .timeline-icon.current {
+            background: #28a745;
+            width: 30px;
+            height: 30px;
+            left: 9px;
+        }
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .timeline-content {
+            background: rgba(40, 40, 40, 0.8);
+        }
+        .timeline-content .expected {
+            font-style: italic;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .timeline-content .change-details {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .filter-bar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .dark-mode .filter-bar {
+            background: rgba(40, 40, 40, 0.9);
+        }
+        /* Evaluation Display Styles */
+        .evaluation-display .star-rating {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+        .evaluation-display .star-rating .bi-star-fill.active {
+            color: #ffc107;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes drawLine {
+            from { height: 0; }
+            to { height: 100%; }
+        }
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 1rem;
+            }
+            .movement-table th, .movement-table td {
+                font-size: 0.85rem;
+            }
+            .timeline-content {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            .sticky-header {
+                padding: 0.5rem 1rem;
+            }
+            .evaluation-display .star-rating {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sticky-header d-flex justify-content-between align-items-center">
+        <h1 class="display-5 fw-bold text-primary mb-0">
+            <i class="bi bi-truck me-2"></i>Shipment: {{ shipment.shipment_id }}
+        </h1>
+        <div>
+            <button id="toggleDarkMode" class="btn btn-outline-secondary me-2" data-bs-toggle="tooltip" data-bs-placement="top" title="Toggle Dark Mode">
+                <i class="bi bi-moon-stars"></i>
+            </button>
+            <a href="{% url 'mainPage1' %}" class="btn btn-primary">
+                <i class="bi bi-arrow-left me-2"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Shipment Details -->
+        <div class="shipment-details">
+            <h4 class="mb-3">Shipment Details</h4>
+            <div class="row gy-2">
+                <div class="col-md-3 col-sm-6"><strong>Shipment ID:</strong> {{ shipment.shipment_id }}</div>
+                <div class="col-md-3 col-sm-6"><strong>Company:</strong> {{ shipment.company }}</div>
+                <div class="col-md-3 col-sm-6"><strong>Vessel:</strong> {{ shipment.vessel }}</div>
+                <div class="col-md-3 col-sm-6"><strong>Warehouse:</strong> {{ shipment.warehouse|default_if_none:"N/A" }}</div>
+                <div class="col-md-3 col-sm-6"><strong>Status:</strong> 
+                    {% if shipment.flag_status == "START" %}
+                        <span class="badge bg-success status-badge">Start</span>
+                    {% elif shipment.flag_status == "STAY" %}
+                        <span class="badge bg-warning status-badge">Stay</span>
+                    {% elif shipment.flag_status == "COMPLETED" %}
+                        <span class="badge bg-primary status-badge">Completed</span>
+                    {% else %}
+                        <span class="badge bg-secondary status-badge">Blank</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 col-sm-6"><strong>In Date:</strong> {{ shipment.in_date|date:"Y-m-d"|default_if_none:"N/A" }}</div>
+                <div class="col-md-3 col-sm-6"><strong>Out Date:</strong> {{ shipment.out_date|date:"Y-m-d"|default_if_none:"N/A" }}</div>
+            </div>
+        </div>
+
+        <!-- Customer Evaluation -->
+        {% if shipment.flag_status == "COMPLETED" and evaluation %}
+        <div class="evaluation-display">
+            <h4 class="mb-3">Customer Evaluation</h4>
+            <div class="mb-2">
+                <strong>Rating:</strong>
+                <span class="star-rating">
+                    {% for i in "12345" %}
+                    <i class="bi bi-star-fill {% if i|add:0 <= evaluation.rating %}active{% endif %}"></i>
+                    {% endfor %}
+                </span>
+                ({{ evaluation.rating }} star{{ evaluation.rating|pluralize }})
+            </div>
+            {% if evaluation.comment %}
+            <div>
+                <strong>Comment:</strong>
+                <p>{{ evaluation.comment|linebreaksbr }}</p>
+            </div>
+            {% endif %}
+            <small class="text-muted">Submitted on {{ evaluation.created_at|date:"Y-m-d H:i:s" }}</small>
+        </div>
+        {% endif %}
+
+        <!-- Update Form -->
+        <div class="update-form">
+            <h4 class="mb-3">Update Shipment Information</h4>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <form method="POST" action="{% url 'updateShipment' shipment.shipment_id %}">
+                {% csrf_token %}
+                <div class="row g-2 mb-3">
+                    <div class="col-md-4">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="e.g., Port of Singapore" >
+                    </div>
+                    <div class="col-md-4">
+                        <label for="warehouse" class="form-label">Warehouse (Optional)</label>
+                        <input type="text" class="form-control" id="warehouse" name="warehouse" placeholder="e.g., Warehouse A" >
+                    </div>
+                    <div class="col-md-4">
+                        <label for="transport_mode" class="form-label">Transport Mode</label>
+                        <select class="form-select" id="transport_mode" name="transport_mode" required>
+                            <option value="VESSEL">Vessel</option>
+                            <option value="AIRPLANE">Airplane</option>
+                            <option value="TRUCK">Truck</option>
+                            <option value="PORT">Port</option>
+                            <option value="TRAIN">Train</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="remark" class="form-label">Remark (Optional)</label>
+                    <textarea class="form-control" id="remark" name="remark" rows="3" placeholder="Additional notes"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-2"></i>Update
+                </button>
+            </form>
+        </div>
+
+        <!-- Timeline -->
+        <h4 class="mb-3">Shipment Flow Timeline</h4>
+        {% if movements or shipment.insert_date %}
+        <div class="timeline">
+            <!-- Creation Node -->
+            {% if shipment.insert_date %}
+            <div class="timeline-item" style="--index: 0;" data-movement-id="create">
+                <div class="timeline-icon {% if not movements and shipment.flag_status != 'COMPLETED' %}current{% else %}completed{% endif %}" data-bs-toggle="popover" data-bs-placement="right" data-bs-content="Shipment initiated.">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
+                <div class="timeline-content">
+                    <strong>Shipment Created</strong><br>
+                    <small>{{ shipment.insert_date|date:"Y-m-d H:i:s" }}</small><br>
+                    <span class="badge bg-dark flow-badge">Shipment Initiated</span><br>
+                    {% if not movements and shipment.flag_status != 'COMPLETED' %}
+                    <span class="expected">Expected to Start: ~1 day</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            <!-- Movement Nodes -->
+            {% for movement in movements %}
+            <div class="timeline-item" style="--index: {{ forloop.counter }};" data-movement-id="{{ movement.id }}">
+                <div class="timeline-icon 
+                    {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}current{% endif %}
+                    {% if movement != movements.last or shipment.flag_status == 'COMPLETED' %}completed{% endif %}" 
+                    data-bs-toggle="popover" data-bs-placement="right" data-bs-content="{{ movement.remark|default:'No remarks' }}">
+                    <i class="bi {% if movement.flag_status == 'COMPLETED' %}bi-check-circle{% elif movement.movement_type == 'WAREHOUSE' %}bi-box-arrow-right{% elif movement.movement_type == 'LOCATION_UPDATE' %}bi-geo-alt{% else %}bi-arrow-right-circle{% endif %}"></i>
+                </div>
+                <div class="timeline-content">
+                    <strong>{{ movement.movement_type }}</strong><br>
+                    <small>{{ movement.timestamp|date:"Y-m-d H:i:s" }}</small><br>
+                    {% if movement.movement_type == 'STATUS' %}
+                        {% if movement.flag_status == 'START' %}
+                            <span class="badge bg-success flow-badge">Entering Origin</span><br>
+                            {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}
+                            <span class="expected">Expected In Transit: ~2-5 days</span>
+                            {% endif %}
+                        {% elif movement.flag_status == 'STAY' %}
+                            <span class="badge bg-warning flow-badge">In Transit</span><br>
+                            {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}
+                            <span class="expected">Expected Completion: ~3-7 days</span>
+                            {% endif %}
+                        {% elif movement.flag_status == 'COMPLETED' %}
+                            <span class="badge bg-primary flow-badge">Arriving at Destination</span><br>
+                            <span class="expected">Shipment Complete</span>
+                        {% else %}
+                            <span class="badge bg-secondary flow-badge">Status Reset</span><br>
+                            {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}
+                            <span class="expected">Expected Update: ~1 day</span>
+                            {% endif %}
+                        {% endif %}
+                    {% elif movement.movement_type == 'WAREHOUSE' %}
+                        <span class="badge bg-info flow-badge">Warehouse Transfer</span><br>
+                        <div class="change-details">
+                            <strong>Location:</strong> {{ movement.location|default:'N/A' }}<br>
+                            <strong>Warehouse:</strong> {{ movement.warehouse|default:'N/A' }}<br>
+                            <strong>Transport:</strong> <span class="badge bg-secondary transport-badge">{{ movement.transport_mode|default:'N/A' }}</span><br>
+                            {% if movement.remark %}
+                            <strong>Remark:</strong> {{ movement.remark }}<br>
+                            {% endif %}
+                        </div>
+                        {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}
+                        <span class="expected">Expected Next Status: ~1-2 days</span>
+                        {% endif %}
+                    {% elif movement.movement_type == 'LOCATION_UPDATE' %}
+                        <span class="badge bg-info flow-badge">Location Updated</span><br>
+                        <div class="change-details">
+                            <strong>Location:</strong> {{ movement.location|default:'N/A' }}<br>
+                            <strong>Transport:</strong> <span class="badge bg-secondary transport-badge">{{ movement.transport_mode|default:'N/A' }}</span><br>
+                            {% if movement.remark %}
+                            <strong>Remark:</strong> {{ movement.remark }}<br>
+                            {% endif %}
+                        </div>
+                        {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}
+                        <span class="expected">Expected Next Update: ~1-2 days</span>
+                        {% endif %}
+                    {% elif movement.movement_type == 'DATE' %}
+                        <span class="badge bg-secondary flow-badge">Date Updated</span><br>
+                        {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}
+                        <span class="expected">Expected Next Status: ~1-2 days</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge bg-dark flow-badge">Other Update</span><br>
+                        {% if movement == movements.last and shipment.flag_status != 'COMPLETED' %}
+                        <span class="expected">Expected Next Status: ~1-2 days</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            No movement history or creation date available for this shipment.
+        </div>
+        {% endif %}
+
+        <!-- Movement History Table -->
+        <h4 class="mb-3">Movement History</h4>
+        <div class="filter-bar">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <select id="filterMovementType" class="form-select">
+                        <option value="">All Movement Types</option>
+                        <option value="STATUS">Status</option>
+                        <option value="WAREHOUSE">Warehouse</option>
+                        <option value="LOCATION_UPDATE">Location Update</option>
+                        <option value="DATE">Date</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="filterFlagStatus" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="START">Start</option>
+                        <option value="STAY">Stay</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="BLANK">Blank</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        {% if movements %}
+        <div class="table-responsive">
+            <table class="table table-bordered movement-table">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col" data-sort="timestamp">Timestamp <i class="bi bi-sort-down sort-icon active"></i></th>
+                        <th scope="col" data-sort="movement_type">Movement Type <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="flow_direction">Flow Direction <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="location">Location <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="warehouse">Warehouse <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="transport_mode">Transport Mode <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="flag_status">Status <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="in_date">In Date <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="out_date">Out Date <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="changed_by">Changed By <i class="bi bi-sort-down sort-icon"></i></th>
+                        <th scope="col" data-sort="remark">Remark <i class="bi bi-sort-down sort-icon"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movement in movements %}
+                    <tr data-movement-id="{{ movement.id }}">
+                        <td>{{ movement.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ movement.movement_type }}</td>
+                        <td>
+                            {% if movement.movement_type == 'STATUS' %}
+                                {% if movement.flag_status == 'START' %}
+                                    <span class="badge bg-success flow-badge">Entering Origin</span>
+                                {% elif movement.flag_status == 'STAY' %}
+                                    <span class="badge bg-warning flow-badge">In Transit</span>
+                                {% elif movement.flag_status == 'COMPLETED' %}
+                                    <span class="badge bg-primary flow-badge">Arriving at Destination</span>
+                                {% else %}
+                                    <span class="badge bg-secondary flow-badge">Status Reset</span>
+                                {% endif %}
+                            {% elif movement.movement_type == 'WAREHOUSE' %}
+                                <span class="badge bg-info flow-badge">Transferred to New Warehouse</span>
+                            {% elif movement.movement_type == 'LOCATION_UPDATE' %}
+                                <span class="badge bg-info flow-badge">Location Updated</span>
+                            {% elif movement.movement_type == 'DATE' %}
+                                <span class="badge bg-secondary flow-badge">Date Updated</span>
+                            {% else %}
+                                <span class="badge bg-dark flow-badge">Other Update</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ movement.location|default_if_none:"N/A" }}</td>
+                        <td>{{ movement.warehouse|default_if_none:"N/A" }}</td>
+                        <td>
+                            <span class="badge bg-secondary transport-badge">{{ movement.transport_mode|default_if_none:"N/A" }}</span>
+                        </td>
+                        <td>
+                            {% if movement.flag_status == "START" %}
+                                <span class="badge bg-success status-badge">Start</span>
+                            {% elif movement.flag_status == "STAY" %}
+                                <span class="badge bg-warning status-badge">Stay</span>
+                            {% elif movement.flag_status == "COMPLETED" %}
+                                <span class="badge bg-primary status-badge">Completed</span>
+                            {% else %}
+                                <span class="badge bg-secondary status-badge">Blank</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ movement.in_date|date:"Y-m-d"|default_if_none:"N/A" }}</td>
+                        <td>{{ movement.out_date|date:"Y-m-d"|default_if_none:"N/A" }}</td>
+                        <td>{{ movement.changed_by|default_if_none:"Unknown" }}</td>
+                        <td>{{ movement.remark|default_if_none:"No remarks" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            No movement history available for this shipment.
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Tooltips and Popovers
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+            [...popoverTriggerList].map(el => new bootstrap.Popover(el));
+
+            // Dark Mode Toggle
+            const toggleDarkMode = document.getElementById('toggleDarkMode');
+            toggleDarkMode.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                toggleDarkMode.querySelector('i').classList.toggle('bi-moon-stars');
+                toggleDarkMode.querySelector('i').classList.toggle('bi-sun');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            });
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                toggleDarkMode.querySelector('i').classList.replace('bi-moon-stars', 'bi-sun');
+            }
+
+            // Confetti for Completed Shipment
+            {% if shipment.flag_status == 'COMPLETED' %}
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            {% endif %}
+
+            // Table Sorting
+            const table = document.querySelector('.movement-table');
+            const headers = table.querySelectorAll('th[data-sort]');
+            let currentSort = { column: 'timestamp', direction: 'desc' };
+
+            const sortTable = (column, direction) => {
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                rows.sort((a, b) => {
+                    let aValue, bValue;
+                    if (column === 'flow_direction') {
+                        aValue = a.querySelector(`td:nth-child(${[...headers].findIndex(h => h.dataset.sort === column) + 1}) .flow-badge`)?.textContent.trim() || '';
+                        bValue = b.querySelector(`td:nth-child(${[...headers].findIndex(h => h.dataset.sort === column) + 1}) .flow-badge`)?.textContent.trim() || '';
+                    } else if (column === 'transport_mode') {
+                        aValue = a.querySelector(`td:nth-child(${[...headers].findIndex(h => h.dataset.sort === column) + 1}) .transport-badge`)?.textContent.trim() || '';
+                        bValue = b.querySelector(`td:nth-child(${[...headers].findIndex(h => h.dataset.sort === column) + 1}) .transport-badge`)?.textContent.trim() || '';
+                    } else {
+                        aValue = a.querySelector(`td:nth-child(${[...headers].findIndex(h => h.dataset.sort === column) + 1})`).textContent.trim();
+                        bValue = b.querySelector(`td:nth-child(${[...headers].findIndex(h => h.dataset.sort === column) + 1})`).textContent.trim();
+                    }
+
+                    if (column === 'timestamp') {
+                        aValue = new Date(aValue).getTime();
+                        bValue = new Date(bValue).getTime();
+                    } else if (['in_date', 'out_date'].includes(column)) {
+                        aValue = aValue === 'N/A' ? '' : new Date(aValue).getTime();
+                        bValue = bValue === 'N/A' ? '' : new Date(bValue).getTime();
+                    } else {
+                        aValue = aValue.toLowerCase();
+                        bValue = bValue.toLowerCase();
+                    }
+
+                    if (aValue === '' || isNaN(aValue)) return direction === 'asc' ? 1 : -1;
+                    if (bValue === '' || isNaN(bValue)) return direction === 'asc' ? -1 : 1;
+
+                    if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+                    if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+
+                tbody.innerHTML = '';
+                rows.forEach(row => tbody.appendChild(row));
+
+                headers.forEach(header => {
+                    const icon = header.querySelector('.sort-icon');
+                    icon.classList.remove('active', 'bi-sort-up', 'bi-sort-down');
+                    if (header.dataset.sort === column) {
+                        icon.classList.add('active', direction === 'asc' ? 'bi-sort-up' : 'bi-sort-down');
+                    } else {
+                        icon.classList.add('bi-sort-down');
+                    }
+                });
+
+                currentSort = { column, direction };
+            };
+
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const column = header.dataset.sort;
+                    let direction = 'asc';
+                    if (currentSort.column === column && currentSort.direction === 'asc') {
+                        direction = 'desc';
+                    }
+                    sortTable(column, direction);
+                });
+            });
+
+            sortTable('timestamp', 'desc');
+
+            // Table Filtering
+            const filterMovementType = document.getElementById('filterMovementType');
+            const filterFlagStatus = document.getElementById('filterFlagStatus');
+            const filterTable = () => {
+                const movementType = filterMovementType.value;
+                const flagStatus = filterFlagStatus.value;
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const movementCell = row.querySelector('td:nth-child(2)').textContent.trim();
+                    const statusCell = row.querySelector('td:nth-child(7) .status-badge').textContent.trim();
+                    const show = (!movementType || movementCell === movementType) && (!flagStatus || statusCell === flagStatus);
+                    row.style.display = show ? '' : 'none';
+                });
+            };
+            filterMovementType.addEventListener('change', filterTable);
+            filterFlagStatus.addEventListener('change', filterTable);
+
+            // Timeline to Table Linking
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const movementId = item.dataset.movementId;
+                    if (movementId !== 'create') {
+                        const row = document.querySelector(`tr[data-movement-id="${movementId}"]`);
+                        if (row) {
+                            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            row.style.backgroundColor = '#d1ecf1';
+                            setTimeout(() => row.style.backgroundColor = '', 1000);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends "mainBodyMobile.html" %}
+
+{% block bodyContent %}
+<div class="container-fluid px-0">
+  <!-- Include backend data here (in an invisible <div>) -->
+  <div id="jsonDataPrelistCompanies"
+  style="display: none;" data-json="{{ prelistCompanies }}"></div>
+  <div id="jsonDataPrelistSuppliers"
+  style="display: none;" data-json="{{ prelistSuppliers }}"></div>
+  <div id="jsonDataPrelistDivisions"
+  style="display: none;" data-json="{{ prelistDivisions }}"></div>
+  <div id="jsonDataPrelistCPacking"
+  style="display: none;" data-json="{{ prelistCPacking }}"></div>
+  <div id="jsonDataPrelistUnits"
+  style="display: none;" data-json="{{ prelistUnits }}"></div>
+  <div id="jsonDataPrelistBys"
+  style="display: none;" data-json="{{ prelistBys }}"></div>
+  <div id="jsonDataPrelistFlags"
+  style="display: none;" data-json="{{ prelistFlags }}"></div>
+  <div id="jsonDatalistWarehouses"
+  style="display: none;" data-json="{{ prelistWarehouses }}"></div>
+  <div id="jsonDatalistVessels"
+  style="display: none;" data-json="{{ VesselsDB }}"></div>
+  <div id="jsonDatalistVesselMap"
+  style="display: none;" data-json="{{ VesselMap }}"></div>
+
+  <div>
+    {% include "shipmentFilterMobile.html" %}
+  </div>
+
+  <div>
+    {% include "shipmentDisplayMobile.html" %}
+  </div>
+
+</div>
+{% endblock bodyContent %}

@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Shipments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --bs-primary: #0077b6;
+            --bs-danger: #e63946;
+        }
+        .text-primary { color: var(--bs-primary) !important; }
+        .btn-primary { 
+            --bs-btn-bg: var(--bs-primary);
+            --bs-btn-border-color: var(--bs-primary);
+            --bs-btn-hover-bg: #005a8f;
+            --bs-btn-hover-border-color: #005a8f;
+        }
+        .btn-danger-outline {
+            --bs-btn-color: var(--bs-danger);
+            --bs-btn-border-color: var(--bs-danger);
+            --bs-btn-hover-color: #fff;
+            --bs-btn-hover-bg: var(--bs-danger);
+            --bs-btn-hover-border-color: var(--bs-danger);
+        }
+        .center-card { max-width: none; margin: 0 auto; }
+        .shipmentFormHeader { color: var(--bs-primary); margin-bottom: 2rem !important; }
+        .action-btns { display: flex; gap: 0.5rem; min-width: 150px; }
+        .table .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+        .bulk-actions { display: flex; gap: 1rem; margin-top: 1rem; justify-content: center; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-5 shipmentBox"> 
+        <div class="w-100 center-card">
+            <h1 class="display-5 fw-bold text-primary mb-5 shipmentFormHeader">
+                <i class="bi bi-shield-lock-fill me-2"></i>Shipment Approval Queue
+            </h1>
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h2 class="card-title fs-4 fw-bold mb-3 border-bottom pb-2">
+                        <i class="bi bi-list-task me-2"></i>Pending Shipments for Approval
+                    </h2>
+
+                    {% if pending_shipments %}
+                    <form method="post" action="{% url 'mainPage1' %}">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Vessel</th>
+                                        <th>Supplier</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-center">Weight</th>
+                                        <th class="text-center">Size</th>
+                                        <th>Submitted By</th>
+                                        <th>Date</th>
+                                        <th style="width: 80px;"> <!-- Increased width to accommodate label -->
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="select-all">
+                                            </div>
+                                        </th>
+                                        <th class="text-center" style="min-width: 180px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in pending_shipments %}
+                                    <tr>
+                                        <td>{{ p.company }}</td>
+                                        <td>{{ p.vessel }}</td>
+                                        <td>{{ p.supplier }}</td>
+                                        <td class="text-center">{{ p.quanty }}</td>
+                                        <td class="text-center">{{ p.weight }}</td>
+                                        <td class="text-center">{{ p.size }}</td>
+                                        <td>{{ p.submitted_by.userID }}</td>
+                                        <td>{{ p.submission_date|date:"M d, Y" }}</td>
+                                        <td><input type="checkbox" name="selected_pending" value="{{ p.pk }}" class="pending-checkbox"></td>
+                                        <td>
+                                            <div class="action-btns">
+                                                <a href="{% url 'approve_pending_shipment' p.pk %}" class="btn btn-primary btn-sm rounded-pill">
+                                                    <i class="bi bi-check-circle"></i> Approve
+                                                </a>
+                                                <a href="{% url 'reject_pending_shipment' p.pk %}" class="btn btn-danger-outline btn-sm rounded-pill">
+                                                    <i class="bi bi-x-circle"></i> Reject
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Bulk Action Buttons (disabled by default) -->
+                        <div class="bulk-actions">
+                            <button type="submit" name="bulk_approve" class="btn btn-primary btn-lg d-flex align-items-center gap-2" id="btn-approve" disabled>
+                                <i class="bi bi-check-circle-fill"></i> Approve Selected
+                            </button>
+                            <button type="submit" name="bulk_reject" class="btn btn-danger btn-lg d-flex align-items-center gap-2" id="btn-reject" disabled>
+                                <i class="bi bi-x-circle-fill"></i> Reject Selected
+                            </button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-info text-center mt-3" role="alert">
+                        <i class="bi bi-check-all me-2"></i>There are no pending shipments requiring approval at this time.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+
+        // === Bulk Action Button Control ===
+        const checkboxes = document.querySelectorAll('.pending-checkbox');
+        const selectAll = document.getElementById('select-all');
+        const btnApprove = document.getElementById('btn-approve');
+        const btnReject = document.getElementById('btn-reject');
+
+        // Function to update button state
+        function updateButtons() {
+            const checkedCount = document.querySelectorAll('.pending-checkbox:checked').length;
+            const enabled = checkedCount > 0;
+            btnApprove.disabled = !enabled;
+            btnReject.disabled = !enabled;
+        }
+
+        // Listen to all individual checkboxes
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                updateButtons();
+
+                // Update "Select All" if needed
+                if (!cb.checked) {
+                    selectAll.checked = false;
+                } else {
+                    const allChecked = Array.from(checkboxes).every(c => c.checked);
+                    selectAll.checked = allChecked;
+                }
+            });
+        });
+
+        // "Select All" handler
+        if (selectAll) {
+            selectAll.addEventListener('change', (e) => {
+                checkboxes.forEach(cb => cb.checked = e.target.checked);
+                updateButtons();
+            });
+        }
+
+        // Initial state
+        updateButtons();
+    });
+</script>
+</html>

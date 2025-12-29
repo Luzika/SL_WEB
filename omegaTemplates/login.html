@@ -1,0 +1,499 @@
+{% extends "mainBody.html" %}
+
+{% block bodyContent %}
+<div class="container-fluid d-flex justify-content-center align-items-center position-relative" style="min-height: calc(100vh - 120px);">
+    <div class="row justify-content-center align-items-center flex-nowrap d-none d-lg-flex" style="width: 100%; max-width: 1400px;">
+        <div class="col-lg-6 col-md-6 p-3 mx-2">
+            <div class="card-glass p-4" style="border-radius: 1.5rem;">
+                <h2 class="text-center mb-4 form-header staff-header" style="font-weight: 700; color: #1e40af;"><i class="bi bi-shield-lock me-2 icon-fancy staff"></i>SL STAFF LOGIN</h2>
+                <form method="POST" autocomplete="off">{% csrf_token %}
+                    <div class="table-responsive">
+                        <table class="table table-borderless tableCentered" style="width: 100%;">
+                            <col style="width: 100%;">
+                            {% for field in staffLoginForm %}
+                            <tr>
+                                <td>
+                                    <div class="form-floating mt-3 mb-2">
+                                        <input type="{% if field.label == 'Password' %}password{% else %}text{% endif %}" 
+                                            class="form-control" 
+                                            id="{{ field.id_for_label }}" 
+                                            name="{{ field.name }}" 
+                                            placeholder="Enter {{ field.label|lower }}"
+                                            value="{{ field.value|default_if_none:'' }}"
+                                            aria-describedby="{{ field.id_for_label }}Help">
+                                        <label for="{{ field.id_for_label }}" class="floating-label">{{ field.label }}</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% for error in staffLoginForm.non_field_errors %}
+                            <tr>
+                                <td class="loginWarningFont text-danger">{{ error|linebreaksbr }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td style="text-align: right; overflow: hidden;">
+                                    <button class="btn btn-primary loginButton w-100 mt-3" type="submit" name="staffLogin">Login</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 p-3 mx-2">
+            <div class="card-glass p-4" style="border-radius: 1.5rem;">
+                <h2 class="text-center mb-4 form-header customer-header" style="font-weight: 700; color: #065f46;"><i class="bi bi-eye me-2 icon-fancy customer"></i>CUSTOMER LOGIN</h2>
+                <form method="POST" autocomplete="off">{% csrf_token %}
+                    <div class="table-responsive">
+                        <table class="table table-borderless tableCentered" style="width: 100%;">
+                            <col style="width: 100%;">
+                            {% for field in customerLoginForm %}
+                            <tr>
+                                <td>
+                                    <div class="form-floating mt-3 mb-2">
+                                        <input type="{% if field.label == 'Password' %}password{% else %}text{% endif %}" 
+                                            class="form-control" 
+                                            id="{{ field.id_for_label }}" 
+                                            name="{{ field.name }}" 
+                                            placeholder="Enter {{ field.label|lower }}"
+                                            value="{{ field.value|default_if_none:'' }}"
+                                            aria-describedby="{{ field.id_for_label }}Help">
+                                        <label for="{{ field.id_for_label }}" class="floating-label">{{ field.label }}</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% for error in customerLoginForm.non_field_errors %}
+                            <tr>
+                                <td class="loginWarningFont text-danger">{{ error|linebreaksbr }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td style="text-align: right; overflow: hidden;">
+                                    <button class="btn btn-primary loginButton w-100 mt-3" type="submit" name="customerLogin">Login</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12 d-lg-none p-3 mx-2" style="max-width: 500px;">
+        <div class="card-glass p-4" style="border-radius: 1.5rem;">
+            <ul class="nav nav-tabs nav-fill mb-4" id="loginTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff-pane" type="button" role="tab" aria-controls="staff-pane" aria-selected="true" style="font-weight: 600; color: #1e40af;">
+                        <i class="bi bi-shield-lock"></i> Staff
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer-pane" type="button" role="tab" aria-controls="customer-pane" aria-selected="false" style="font-weight: 600; color: #065f46;">
+                        <i class="bi bi-eye"></i> Customer
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="loginTabContent">
+                <div class="tab-pane fade show active" id="staff-pane" role="tabpanel" aria-labelledby="staff-tab">
+                    <h2 class="text-center form-header staff-header mb-4" style="font-weight: 700; color: #1e40af;"><i class="bi bi-shield-lock me-2 icon-fancy staff"></i>STAFF LOGIN</h2>
+                    <form method="POST" autocomplete="off">{% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table table-borderless tableCentered" style="width: 100%;">
+                                <col style="width: 100%;">
+                                {% for field in staffLoginForm %}
+                                <tr>
+                                    <td>
+                                        <div class="form-floating mt-3 mb-2">
+                                            <input type="{% if field.label == 'Password' %}password{% else %}text{% endif %}" 
+                                                class="form-control" 
+                                                id="tab_{{ field.id_for_label }}" 
+                                                name="{{ field.name }}" 
+                                                placeholder="Enter {{ field.label|lower }}"
+                                                value="{{ field.value|default_if_none:'' }}"
+                                                aria-describedby="tab_{{ field.id_for_label }}Help">
+                                            <label for="tab_{{ field.id_for_label }}" class="floating-label">{{ field.label }}</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% for error in staffLoginForm.non_field_errors %}
+                                <tr>
+                                    <td class="loginWarningFont text-danger">{{ error|linebreaksbr }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td style="text-align: right; overflow: hidden;">
+                                        <button class="btn btn-primary loginButton w-100 mt-3" type="submit" name="staffLogin">Login</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="customer-pane" role="tabpanel" aria-labelledby="customer-tab">
+                    <h2 class="text-center form-header customer-header mb-4" style="font-weight: 700; color: #065f46;"><i class="bi bi-eye me-2 icon-fancy customer"></i>CUSTOMER LOGIN</h2>
+                    <form method="POST" autocomplete="off">{% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table table-borderless tableCentered" style="width: 100%;">
+                                <col style="width: 100%;">
+                                {% for field in customerLoginForm %}
+                                <tr>
+                                    <td>
+                                        <div class="form-floating mt-3 mb-2">
+                                            <input type="{% if field.label == 'Password' %}password{% else %}text{% endif %}" 
+                                                class="form-control" 
+                                                id="tab_{{ field.id_for_label }}" 
+                                                name="{{ field.name }}" 
+                                                placeholder="Enter {{ field.label|lower }}"
+                                                value="{{ field.value|default_if_none:'' }}"
+                                                aria-describedby="tab_{{ field.id_for_label }}Help">
+                                            <label for="tab_{{ field.id_for_label }}" class="floating-label">{{ field.label }}</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% for error in customerLoginForm.non_field_errors %}
+                                <tr>
+                                    <td class="loginWarningFont text-danger">{{ error|linebreaksbr }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td style="text-align: right; overflow: hidden;">
+                                        <button class="btn btn-primary loginButton w-100 mt-3" type="submit" name="customerLogin">Login</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="particle-bg"></div>
+</div>
+
+<style>
+  /* --- STYLES IN THE ORIGINAL FILE ARE RETAINED AND NOT SHOWN HERE FOR BREVITY --- */
+  /* The media queries in the original style section handle the responsive look */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(209,213,219,0.9) 100%), radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(209,213,219,0.2) 100%);
+    display: flex;
+    flex-direction: column;
+  }
+
+  body > .container-fluid {
+    flex: 1 0 auto;
+    padding: 0;
+  }
+
+  footer {
+    flex-shrink: 0;
+    width: 100%;
+    padding: 1rem 0;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    color: #1f2937;
+    font-size: 0.9rem;
+  }
+
+  .particle-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="10" cy="10" r="1.5" fill="rgba(255,255,255,0.2)"/><circle cx="50" cy="50" r="2" fill="rgba(209,213,219,0.2)"/><circle cx="90" cy="90" r="1.5" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
+    animation: particleMove 25s linear infinite;
+    opacity: 0.5;
+    z-index: -1;
+  }
+
+  @keyframes particleMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 100px 100px; }
+  }
+
+  .card-glass {
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    position: relative;
+    border: 1px solid transparent;
+  }
+
+  .card-glass::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: 1.5rem;
+    background: linear-gradient(45deg, rgba(59,130,246,0.5), rgba(6,95,70,0.5));
+    z-index: -1;
+    transition: background 0.3s ease;
+  }
+
+  .card-glass:hover::before {
+    background: #3b82f6;
+  }
+
+  .form-header {
+    position: relative;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .form-header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: transparent;
+    transition: background 0.3s ease;
+  }
+
+  .form-header:hover::after {
+    background: #3b82f6;
+  }
+
+  .staff-header:hover {
+    color: #1e40af;
+  }
+
+  .customer-header:hover {
+    color: #065f46;
+  }
+
+  .icon-fancy {
+    font-size: 2.2rem;
+    transition: transform 0.3s ease, color 0.3s ease, filter 0.3s ease;
+  }
+
+  .icon-fancy.staff {
+    color: #1e40af;
+  }
+
+  .icon-fancy.customer {
+    color: #065f46;
+  }
+
+  .loginButton {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    border: none;
+    padding: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .loginButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: translateX(-200%);
+    transition: transform 0.5s ease;
+  }
+
+  .loginButton::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    z-index: -1;
+    transition: height 0.3s ease;
+  }
+
+  .loginButton:hover::before {
+    transform: translateX(200%);
+  }
+
+  .loginButton:hover::after {
+    height: 100%;
+  }
+
+  .loginButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    color: white;
+  }
+
+  .form-floating {
+    position: relative;
+  }
+
+  .form-floating > .form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    background: rgba(255, 255, 255, 0.95);
+    color: #1f2937;
+    padding: 1rem 0.75rem;
+    height: calc(3.5rem + 2px);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-floating > .form-control:focus {
+    border-color: #3b82f6;
+    background: #ffffff;
+    transform: scale(1.02);
+    animation: pulseInput 1.5s ease-in-out infinite;
+  }
+
+  .form-floating > .form-control:not(:placeholder-shown) ~ .floating-label,
+  .form-floating > .form-control:focus ~ .floating-label {
+    transform: translateY(-1.9rem) translateX(0.5rem) scale(0.9);
+    color: #1f2937;
+    background: white;
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+
+  .floating-label {
+    position: absolute;
+    top: 0;
+    left: 0.75rem;
+    font-size: 1.2rem;
+    color: #6b7280;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    transform-origin: left top;
+  }
+
+  .form-control::placeholder {
+    color: #9ca3af;
+    opacity: 0;
+  }
+
+  @keyframes pulseInput {
+    0% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
+    100% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+  }
+
+  .form-control.typing {
+    animation: typingPulse 0.3s ease-in-out;
+  }
+
+  @keyframes typingPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+
+  .form-text.text-muted {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+  }
+
+  td.loginWarningFont {
+    color: #dc2626;
+    font-size: 0.9rem;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  @media (max-width: 992px) {
+    .row.flex-nowrap {
+      flex-wrap: wrap !important;
+    }
+    .col-lg-7 {
+      max-width: 100%;
+    }
+    /* Mobile Tab adjustments */
+    .nav-tabs .nav-link {
+        font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .icon-fancy {
+      font-size: 1.8rem;
+    }
+    .loginButton {
+      font-size: 0.85rem;
+      padding: 0.6rem;
+    }
+    .form-control {
+      font-size: 0.95rem;
+      height: calc(3rem + 2px);
+    }
+    .floating-label {
+      font-size: 1rem;
+    }
+    .form-floating > .form-control:not(:placeholder-shown) ~ .floating-label,
+    .form-floating > .form-control:focus ~ .floating-label {
+      font-size: 1rem;
+      transform: translateY(-1.5rem) translateX(-0.5rem) scale(0.85);
+      background: transparent;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .form-floating > .form-control {
+      padding: 0.8rem 0.6rem;
+      height: calc(3rem + 2px);
+    }
+    .form-header {
+      padding: 0.4rem 0.8rem;
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+      input.addEventListener('input', function() {
+        this.classList.add('typing');
+        setTimeout(() => this.classList.remove('typing'), 300);
+      });
+    });
+
+    // Optional: Auto-switch to the correct tab if there were validation errors on form submission.
+    // This is useful if the user submitted one form and it failed.
+    const urlParams = new URLSearchParams(window.location.search);
+    const staffError = document.querySelector('#staff-pane .loginWarningFont.text-danger');
+    const customerError = document.querySelector('#customer-pane .loginWarningFont.text-danger');
+
+    const staffTab = document.getElementById('staff-tab');
+    const customerTab = document.getElementById('customer-tab');
+    
+    // Check for errors in the mobile tabbed version
+    if (staffError) {
+        new bootstrap.Tab(staffTab).show();
+    } else if (customerError) {
+        new bootstrap.Tab(customerTab).show();
+    }
+
+    // Since the PC view is just two forms, they both show errors simultaneously, so no switching is needed there.
+  });
+</script>
+{% endblock bodyContent %}
